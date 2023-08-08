@@ -17,13 +17,13 @@ while True:
             sys.exit()
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_w:
-                game.pac_man_move = (0, -2)
+                game.pac_man_move = (0, -SPEED)
             elif event.key == pg.K_s:
-                game.pac_man_move = (0, 2)
+                game.pac_man_move = (0, SPEED)
             elif event.key == pg.K_a:
-                game.pac_man_move = (-2, 0)
+                game.pac_man_move = (-SPEED, 0)
             elif event.key == pg.K_d:
-                game.pac_man_move = (2, 0)
+                game.pac_man_move = (SPEED, 0)
 
 
     game.create_frame()

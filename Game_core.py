@@ -8,7 +8,7 @@ class Game:
         self.screen = screen
         self.map = Map()
         self.pac_man_move = (0, 0)
-        self.pac_man = Pac_man(360, 360, self.screen)
+        self.pac_man = Pac_man(SCREEN_SIZE[0]/2, SCREEN_SIZE[1]/2, self.screen)
         self.enemies = pg.sprite.Group()
         self.create_enemies()
 
