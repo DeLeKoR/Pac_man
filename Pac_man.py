@@ -4,15 +4,15 @@ class Pac_man:
     def __init__(self, x, y, screen):
         self.x = x
         self.y = y
+        picture = pg.image.load(PAC_MAN_IMG_PASS)
+        self.pac_man = pg.transform.scale(picture, PAC_MAN_SIZE)
         self.screen = screen
         self.textures = []
         self.create_image()
         self.rect = self.textures[0].get_rect()
 
     def create_image(self):
-        picture = pg.image.load(PAC_MAN_IMG_PASS)
-        pac_man = pg.transform.scale(picture, PAC_MAN_SIZE)
-        self.textures.append(pac_man)
+        self.textures.append(self.pac_man)
 
 
     def move(self, x: int = 0, y: int = 0):
