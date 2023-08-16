@@ -18,7 +18,7 @@ class Game:
         self.pac_man.draw()
 
     def create_frame(self):
-        self.map.move(self.pac_man, *self.pac_man.move_now)
+        self.pac_man.move()
 
     def create_enemies(self):
         pass

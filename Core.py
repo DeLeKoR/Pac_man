@@ -4,7 +4,7 @@ import sys
 pg.init()
 pg.display.set_caption('Pac_man')
 
-screen = pg.display.set_mode(PLAY_BOARD_SIZE)
+screen = pg.display.set_mode(SCREEN_SIZE)
 clock = pg.time.Clock()
 
 game = Game(screen)

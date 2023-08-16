@@ -18,27 +18,6 @@ class Map:
                 cell = Cell((x, y), type)
                 self.cells.add(cell)
 
-    def move(self, peace, x: int = 0, y: int = 0):
-        if x > 0:
-            cell = get_cell_by_cord((peace.cell.cord[0]+1, peace.cell.cord[1]), self.cells)
-            if cell.type:
-                peace.x += x
-        if x < 0:
-            cell = get_cell_by_cord((peace.cell.cord[0]-1, peace.cell.cord[1]), self.cells)
-            if cell.type:
-                peace.x += x
-        if y > 0:
-            cell = get_cell_by_cord((peace.cell.cord[0], peace.cell.cord[1]+1), self.cells)
-            if cell.type:
-                peace.y += y
-        if y < 0:
-            cell = get_cell_by_cord((peace.cell.cord[0], peace.cell.cord[1]-1), self.cells)
-            if cell.type:
-                peace.y += y
-        peace.rect.x, peace.rect.y = peace.x, peace.y
-        if peace.rect.center == get_cell(peace.rect.center, self.cells).rect.center:
-            peace.update_cell(get_cell(peace.rect.center, self.cells))
-            peace.move_now = peace.move_future
 
     def draw_cells(self):
         for cell in self.cells:
@@ -51,7 +30,7 @@ class Map:
 class Cell(pg.sprite.Sprite):
     def __init__(self, coord, type):
         super().__init__()
-        self.cell_size = (int(PLAY_BOARD_SIZE[0]/28), int(PLAY_BOARD_SIZE[1]/31))
+        self.cell_size = (int(PLAY_BOARD_SIZE[0]/27), int(PLAY_BOARD_SIZE[1]/30))
         self.cord = coord
         self.real_cord = (self.cord[0] * self.cell_size[0], self.cord[1] * self.cell_size[1])
         self.rect = pg.Rect(self.cord[0] * self.cell_size[0], self.cord[1] * self.cell_size[1], self.cell_size[0], self.cell_size[1])
