@@ -1,6 +1,6 @@
 from Setting import *
 from Map import *
-from Enemy import *
+from Enemies import *
 from Pac_man import *
 
 class Game:

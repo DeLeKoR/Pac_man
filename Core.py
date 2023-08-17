@@ -6,7 +6,6 @@ pg.display.set_caption('Pac_man')
 
 screen = pg.display.set_mode(SCREEN_SIZE)
 clock = pg.time.Clock()
-
 game = Game(screen)
 
 while True:
@@ -28,6 +27,5 @@ while True:
 
     game.create_frame()
     game.draw_frame()
-
     clock.tick(60)
     pg.display.update()
