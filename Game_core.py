@@ -1,6 +1,6 @@
 from Setting import *
 from Map import *
-from Enemy import *
+from Enemies import *
 from Pac_man import *
 from Basic_func import *
 
@@ -16,11 +16,14 @@ class Game:
         self.map.draw()
         #self.map.draw_cells()
         self.pac_man.draw()
+        self.enemies.draw(self.screen)
 
     def create_frame(self):
         self.pac_man.move()
 
     def create_enemies(self):
-        pass
-
+        for image, cords in zip(images_ghosts, cords_ghosts):
+            cell = get_cell_by_cord(cords, self.map.cells)
+            ghost = Ghost(cell, self.map.cells, self.screen, image)
+            self.enemies.add(ghost)
 

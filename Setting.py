@@ -1,4 +1,16 @@
 import pygame as pg
+import os
+
+# настройка ассетов игры
+game_folder = os.path.dirname(__file__)
+images_folder = os.path.join(game_folder, "images")
+blue_ghost = os.path.join(images_folder, "blue_ghost.png")
+yellow_ghost = os.path.join(images_folder, "jellow_ghost.png")
+pink_ghost = os.path.join(images_folder, "pink_ghost.png")
+red_ghost = os.path.join(images_folder, "red_ghost.png")
+
+images_ghosts = (blue_ghost, pink_ghost, yellow_ghost, red_ghost)
+cords_ghosts = ((12, 14), (14, 14), (16, 14), (14, 11)) 
 
 SCREEN_SIZE = (1000, 800)
 
