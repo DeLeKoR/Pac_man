@@ -1,8 +1,9 @@
 from Setting import *
 from Basic_func import *
 
-class Entity:
+class Entity(pg.sprite.Sprite):
     def __init__(self, screen, cell, cells):
+        pg.sprite.Sprite.__init__(self)
         self.size = (40, 40)
         self.screen = screen
         # направление движения

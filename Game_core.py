@@ -1,6 +1,6 @@
 from Setting import *
 from Map import *
-from Enemy import *
+from Enemies import *
 from Pac_man import *
 from Basic_func import *
 
@@ -16,11 +16,19 @@ class Game:
         self.map.draw()
         #self.map.draw_cells()
         self.pac_man.draw()
+        self.enemies.draw(self.screen)
 
     def create_frame(self):
         self.pac_man.move()
+        self.enemies.update()
 
-    def create_enemies(self):
-        pass
+    def create_enemies(self): 
+        for color_type, image, cords, retreat in zip(ghosts_colors, images_ghosts, cords_ghosts, retreat_cords):
+            cell = get_cell_by_cord(cords, self.map.cells)
+            if color_type != "red":
+                ghost = Ghost(cell, self.map.cells, self.screen, image, color_type, start_points[0], retreat, True)
+            else:    
+                ghost = Ghost(cell, self.map.cells, self.screen, image, color_type, None, retreat, False)
+            self.enemies.add(ghost)
 
 

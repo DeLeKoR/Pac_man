@@ -1,9 +1,25 @@
 import pygame as pg
+import os
+
+# настройка ассетов игры
+game_folder = os.path.dirname(__file__)
+images_folder = os.path.join(game_folder, "images")
+blue_ghost = os.path.join(images_folder, "blue_ghost.png")
+yellow_ghost = os.path.join(images_folder, "jellow_ghost.png")
+pink_ghost = os.path.join(images_folder, "pink_ghost.png")
+red_ghost = os.path.join(images_folder, "red_ghost.png")
+
+# настройка призраков
+images_ghosts = (blue_ghost, pink_ghost, yellow_ghost, red_ghost)
+cords_ghosts = ((12, 14), (14, 14), (16, 14), (14, 11)) # координаты клеток, на которых сторят призраки в начале игры
+ghosts_colors = ("blue", "pink", "yellow", "red") 
+act_ghosts = True
+start_points = [(14, 14), (14, 11)] # целевые клетки призраков в доме
+retreat_cords = ((26, 29), (1, 1), (1, 29), (26, 1)) # координаты клеток отступления
+
 
 SCREEN_SIZE = (1000, 800)
-
 PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
-
 BG_COLOR = (5, 5, 20)
 
 SPEED = 1
