@@ -10,6 +10,6 @@ class Pac_man(Entity):
 
 
 
-    def draw(self):
-        self.screen.blit(self.pac_man, (self.x, self.y))
+    def draw_pac_man(self):
+        self.draw(self.pac_man)
 
