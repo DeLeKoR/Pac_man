@@ -13,3 +13,9 @@ class Pac_man(Entity):
     def draw_pac_man(self):
         self.draw(self.pac_man)
 
+    def eat_point(self, score):
+        cell = get_cell(self.rect.center, self.cells)
+        if cell is not None and cell.rect.center == self.rect.center and cell.point is not None:
+            cell.point.kill()
+            score[0] += cell.point.value
+            cell.point = None

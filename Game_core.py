@@ -15,12 +15,13 @@ class Game:
         self.score_board = Score_board(self.screen)
 
     def draw_frame(self):
-        self.map.draw()
-        #self.map.draw_cells()
+        self.map.draw_map()
+        self.map.draw_points()
         self.pac_man.draw_pac_man()
         self.score_board.draw_board()
 
     def create_frame(self):
+        self.pac_man.eat_point(self.score_board.score)
         self.pac_man.move()
 
     def create_enemies(self):
