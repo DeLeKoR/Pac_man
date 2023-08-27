@@ -17,6 +17,7 @@ class Game:
     def draw_frame(self):
         self.map.draw_map()
         self.map.draw_points()
+        self.map.update_meal()
         self.pac_man.draw_pac_man()
         self.enemies.draw(self.screen)
         self.score_board.draw_board()
@@ -25,6 +26,7 @@ class Game:
         self.pac_man.eat_point(self.score_board.score)
         self.pac_man.move()
         self.enemies.update()
+        self.map.create_meal()
 
     def create_enemies(self): 
         for color_type, image, cords, retreat in zip(ghosts_colors, images_ghosts, cords_ghosts, retreat_cords):

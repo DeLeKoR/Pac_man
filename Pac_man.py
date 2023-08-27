@@ -19,3 +19,7 @@ class Pac_man(Entity):
             cell.point.kill()
             score[0] += cell.point.value
             cell.point = None
+        if cell is not None and cell.rect.center == self.rect.center and cell.meal is not None:
+            cell.meal.kill()
+            score[0] += cell.meal.value
+            cell.meal = None
