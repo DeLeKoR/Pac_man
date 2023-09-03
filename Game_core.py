@@ -29,10 +29,7 @@ class Game:
     def create_enemies(self): 
         for color_type, image, cords, retreat in zip(ghosts_colors, images_ghosts, cords_ghosts, retreat_cords):
             cell = get_cell_by_cord(cords, self.map.cells)
-            if color_type != "red":
-                ghost = Ghost(cell, self.map.cells, self.screen, image, color_type, start_points[0], retreat, True, self.pac_man)
-            else:    
-                ghost = Ghost(cell, self.map.cells, self.screen, image, color_type, None, retreat, False, self.pac_man)
+            ghost = Ghost(cell, self.map.cells, self.screen, image, color_type, retreat, True, self.pac_man)
             self.enemies.add(ghost)
 
 
