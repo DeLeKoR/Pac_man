@@ -25,7 +25,7 @@ while True:
             elif event.key == pg.K_d or event.key == pg.K_RIGHT:
                 game.pac_man.move_future = (SPEED, 0)
 
-
+    game.fps = clock.get_fps()
     game.create_frame()
     game.draw_frame()
 

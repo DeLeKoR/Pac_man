@@ -6,8 +6,9 @@ from Basic_func import *
 from Score_board import *
 
 class Game:
-    def __init__(self, screen):
+    def __init__(self, screen, fps: int = 0):
         self.screen = screen
+        self.fps = fps
         self.map = Map(self.screen)
         self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells)
         self.enemies = pg.sprite.Group()
@@ -19,18 +20,15 @@ class Game:
         self.map.draw_points()
         self.map.update_meal()
         self.pac_man.draw_pac_man()
-        self.draw_enemies()
-        self.score_board.draw_board()
+        for enemy in self.enemies:
+            enemy.draw_enemy()
+        self.score_board.draw_board(self.fps)
 
     def create_frame(self):
         self.pac_man.eat_point(self.score_board.score)
         self.pac_man.move()
         self.enemies.update()
         self.map.create_meal()
-
-    def draw_enemies(self):
-        for ghost in self.enemies:
-            ghost.draw(ghost.image)
 
     def create_enemies(self): 
         for color_type, image, cords, retreat in zip(ghosts_colors, images_ghosts, cords_ghosts, retreat_cords):

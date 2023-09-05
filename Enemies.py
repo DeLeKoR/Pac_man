@@ -36,6 +36,9 @@ class Ghost(Entity):
         self.start_time = pg.time.get_ticks()
         self.move()
 
+    def draw_enemy(self):
+        self.draw(self.image)
+
     def update(self):
         self.check_time()
         if self.mode_now == "attack":
