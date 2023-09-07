@@ -44,7 +44,7 @@ class Map:
                     self.points.add(point)
                 elif type == 3:
                     cell = get_cell_by_cord((x, y), self.cells)
-                    point = Point(self.screen, cell.rect.center, 2)
+                    point = Point(self.screen, cell.rect.center, 3)
                     cell.point = point
                     self.points.add(point)
 
