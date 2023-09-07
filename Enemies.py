@@ -43,15 +43,14 @@ class Ghost(Entity):
         self.check_time()
         if self.mode_now == "attack":
             self.target = self.pac_man.cell.cord
-        if self.activity:
-            if not self.ghost_in_house:
-                if self.check_future_cell():
-                    self.select_direction()
-                else:
-                    self.change_direction()
-            elif self.ghost_in_house:
-                self.get_out()
-            self.move()
+        if not self.ghost_in_house:
+            if self.check_future_cell():
+                self.select_direction()
+            else:
+                self.change_direction()
+        elif self.ghost_in_house:
+            self.get_out()
+        self.move()
 
     # ИЗМЕНЕНИЕ РЕЖИМОВ У ПРИЗРАКОВ
 
@@ -59,16 +58,16 @@ class Ghost(Entity):
         """Проверка времени действия текущего режима"""
         current_time = pg.time.get_ticks()
         different = (current_time - self.start_time) / 1000
-        if self.mode_now == "scare":
-            if different >= 10:
+        if self.mode_now != "scare":
+            time_mode = self.times_modes[self.index_mode]
+            if different >= time_mode:
+                if time_mode != self.times_modes[-1]:
+                    self.index_mode += 1
+                elif time_mode == self.times_modes[-1]:
+                    self.index_mode = 0
                 self.change_mode()
         else:
-            time_mode = self.times_modes[self.index_mode]
-            if time_mode != self.times_modes[-1] and different >= time_mode:
-                self.index_mode += 1
-                self.change_mode()
-            elif time_mode == self.times_modes[-1] and different >= time_mode:
-                self.index_mode = 0
+            if different >= 10:
                 self.change_mode()
 
     def change_mode(self):
@@ -127,10 +126,11 @@ class Ghost(Entity):
 
     def check_future_cell(self):
         """Проверяет является ли передняя клетка местом, где призраку нужно сделать выбор в какую сторону пойти"""
-        cord = self.future_cell.cord
-        if cord[1] in dir_select_cells.keys():
-            if cord[0] in dir_select_cells[cord[1]]:
-                return True
+        if self.future_cell is not None:
+            x, y = self.future_cell.cord
+            if y in dir_select_cells.keys():
+                if x in dir_select_cells[y]:
+                    return True
         return False
     
     def change_direction(self):
@@ -138,7 +138,7 @@ class Ghost(Entity):
         try:
             next_cell = self.get_next_cell()
             if not next_cell.type:
-                side_cells_cord = self.get_side_cells() # получаем координаты клеток, расположенные по бокам от целевой
+                side_cells_cord = self.get_side_cells() # получаем клетоки, расположенные по бокам от целевой
                 cells = self.filter_cells(side_cells_cord) # получаем клеки, по которым призрак сможет идти 
                 self.move_future = (cells[0].cord[0] - self.future_cell.cord[0], cells[0].cord[1] - self.future_cell.cord[1]) 
         except AttributeError:
@@ -146,22 +146,22 @@ class Ghost(Entity):
 
     def select_direction(self):
         """Выбирает в какую сторону лабиринта пойти призраку"""
-        next_cell = self.get_next_cell().cord
+        next_cell = self.get_next_cell()
         side_cells = self.get_side_cells()
-        list_cells = self.filter_cells([next_cell, *side_cells])
-        if self.mode_now == "scare":
-            cell = random.choice(list_cells)
-        else:
+        list_cells = self.filter_cells((next_cell, *side_cells))
+        if self.mode_now != "scare":
             cell = self.choose_cell(list_cells)
+        else:
+            cell = random.choice(list_cells)
         self.move_future = (cell.cord[0] - self.future_cell.cord[0], cell.cord[1] - self.future_cell.cord[1])
     
     def get_next_cell(self):
         """Возращает клетку, рассположенную впереди клетки, к которой призрак движется"""
-        cords_next = (self.future_cell.cord[0] + self.move_future[0], self.future_cell.cord[1] + self.move_future[1])
-        return get_cell_by_cord(cords_next, self.cells)
+        next_cell = (self.future_cell.cord[0] + self.move_future[0], self.future_cell.cord[1] + self.move_future[1])
+        return get_cell_by_cord(next_cell, self.cells)
     
     def get_side_cells(self):
-        """Находит координаты клеток, расположенные по бокам от передней клетки"""
+        """Находит клетоки, расположенные по бокам от передней клетки"""
         if self.move_now[1] > 0 or self.move_now[1] < 0:
             cell_1 = self.future_cell.cord[0] + 1, self.future_cell.cord[1]
             cell_2 = self.future_cell.cord[0] - 1, self.future_cell.cord[1] 
@@ -169,16 +169,15 @@ class Ghost(Entity):
             cell_1 = self.future_cell.cord[0], self.future_cell.cord[1] + 1
             cell_2 = self.future_cell.cord[0], self.future_cell.cord[1] - 1
 
-        return [cell_1, cell_2]
+        return get_cell_by_cord(cell_1, self.cells), get_cell_by_cord(cell_2, self.cells)
     
-    def filter_cells(self, list_cords):
+    def filter_cells(self, list_cells):
         """Фильтует клетки, на которых стоит стена, и возращает список клеток по которым можно ходить"""
-        list_cells = []
-        for cord in list_cords:
-            cell = get_cell_by_cord(cord, self.cells)
+        new_list_cells = []
+        for cell in list_cells:
             if cell.type:
-                list_cells.append(cell)
-        return list_cells
+                new_list_cells.append(cell)
+        return new_list_cells
     
     def choose_cell(self, list_cells):
         list_distances = self.count_distance(list_cells)
