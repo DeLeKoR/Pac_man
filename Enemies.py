@@ -127,10 +127,8 @@ class Ghost(Entity):
     def check_future_cell(self):
         """Проверяет является ли передняя клетка местом, где призраку нужно сделать выбор в какую сторону пойти"""
         if self.future_cell is not None:
-            x, y = self.future_cell.cord
-            if y in dir_select_cells.keys():
-                if x in dir_select_cells[y]:
-                    return True
+            if self.future_cell.place_select:
+                return True
         return False
     
     def change_direction(self):
@@ -159,25 +157,19 @@ class Ghost(Entity):
         """Возращает клетку, рассположенную впереди клетки, к которой призрак движется"""
         next_cell = (self.future_cell.cord[0] + self.move_future[0], self.future_cell.cord[1] + self.move_future[1])
         return get_cell_by_cord(next_cell, self.cells)
-    
-    def get_side_cells(self):
-        """Находит клетоки, расположенные по бокам от передней клетки"""
-        if self.move_now[1] > 0 or self.move_now[1] < 0:
-            cell_1 = self.future_cell.cord[0] + 1, self.future_cell.cord[1]
-            cell_2 = self.future_cell.cord[0] - 1, self.future_cell.cord[1] 
-        elif self.move_now[0] > 0 or self.move_now[0] < 0:
-            cell_1 = self.future_cell.cord[0], self.future_cell.cord[1] + 1
-            cell_2 = self.future_cell.cord[0], self.future_cell.cord[1] - 1
 
-        return get_cell_by_cord(cell_1, self.cells), get_cell_by_cord(cell_2, self.cells)
-    
+    def get_side_cells(self):
+        """Находит клетки, расположенные по бокам от передней клетки"""
+        result = []
+        for side in (-1, 1):
+            cord = self.future_cell.cord[0] + self.move_now[1] * side, self.future_cell.cord[1] + self.move_now[0] * side 
+            cell = get_cell_by_cord(cord, self.cells)
+            result.append(cell)
+        return result
+
     def filter_cells(self, list_cells):
         """Фильтует клетки, на которых стоит стена, и возращает список клеток по которым можно ходить"""
-        new_list_cells = []
-        for cell in list_cells:
-            if cell.type:
-                new_list_cells.append(cell)
-        return new_list_cells
+        return [cell for cell in list_cells if cell.type]
     
     def choose_cell(self, list_cells):
         list_distances = self.count_distance(list_cells)

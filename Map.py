@@ -21,7 +21,8 @@ class Map:
     def create_cells(self):
         for y in range(len(MAP)):
             for x, type in enumerate(MAP[y]):
-                cell = Cell((x, y), type)
+                place_select = check_cell((x, y)) # является ли клетка развилкой лабиринта
+                cell = Cell((x, y), type, place_select)
                 self.cells.add(cell)
 
 
@@ -76,13 +77,14 @@ class Map:
 
 
 class Cell(pg.sprite.Sprite):
-    def __init__(self, coord, type):
+    def __init__(self, coord, type, place_select):
         super().__init__()
         self.cell_size = (int(PLAY_BOARD_SIZE[0]/27), int(PLAY_BOARD_SIZE[1]/30))
         self.cord = coord
         self.real_cord = (self.cord[0] * self.cell_size[0], self.cord[1] * self.cell_size[1])
         self.rect = pg.Rect(self.cord[0] * self.cell_size[0], self.cord[1] * self.cell_size[1], self.cell_size[0], self.cell_size[1])
         self.type = type
+        self.place_select = place_select # является ли клетка развилкой лабиринта
         self.point = None
         self.meal = None
 
