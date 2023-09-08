@@ -13,13 +13,17 @@ class Pac_man(Entity):
     def draw_pac_man(self):
         self.draw(self.pac_man)
 
-    def eat_point(self, score):
+    def eat_point(self, score, fright):
         cell = get_cell(self.rect.center, self.cells)
-        if cell is not None and cell.rect.center == self.rect.center and cell.point is not None:
-            cell.point.kill()
+        if cell is not None and ((cell.rect.centerx - SPEED/2 <= self.rect.centerx <= cell.rect.centerx + SPEED/2)
+                    and (cell.rect.centery - SPEED/2 <= self.rect.centery <= cell.rect.centery + SPEED/2)) and cell.point is not None:
             score[0] += cell.point.value
+            if cell.point.type == 3:
+                fright[0] ^= True
+            cell.point.kill()
             cell.point = None
-        if cell is not None and cell.rect.center == self.rect.center and cell.meal is not None:
+        if cell is not None and ((cell.rect.centerx - SPEED/2 <= self.rect.centerx <= cell.rect.centerx + SPEED/2)
+                    and (cell.rect.centery - SPEED/2 <= self.rect.centery <= cell.rect.centery + SPEED/2)) and cell.meal is not None:
             cell.meal.kill()
             score[0] += cell.meal.value
             cell.meal = None

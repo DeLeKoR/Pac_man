@@ -27,19 +27,23 @@ class Entity(pg.sprite.Sprite):
             self.textures.pop(1)
         cell = get_cell(self.rect.center, self.cells)
         if cell is not None:
-            if self.rect.center == cell.rect.center:
+            if ((cell.rect.centerx - SPEED/2 <= self.rect.centerx <= cell.rect.centerx + SPEED/2)
+                    and (cell.rect.centery - SPEED/2 <= self.rect.centery <= cell.rect.centery + SPEED/2)):
                 self.cell = cell
-                cell = get_cell_by_cord((self.cell.cord[0] + self.move_future[0], self.cell.cord[1] + self.move_future[1]), self.cells)
-                if cell is not None and cell.type:
+                self.rect.center = self.cell.rect.center
+                self.x, self.y = self.rect.x, self.rect.y
+                future_cell = get_cell_by_cord((self.cell.cord[0] + sing_number(self.move_future[0]), self.cell.cord[1] + sing_number(self.move_future[1])), self.cells)
+                if future_cell is not None and future_cell.type:
                     self.move_now = self.move_future
                 if self.move_now == self.move_future:
-                    self.future_cell = cell
-                self.next_cell = get_cell_by_cord((self.cell.cord[0] + self.move_now[0], self.cell.cord[1] + self.move_now[1]), self.cells)
+                    self.future_cell = future_cell
+                self.next_cell = get_cell_by_cord((self.cell.cord[0] + sing_number(self.move_now[0]), self.cell.cord[1] + sing_number(self.move_now[1])), self.cells)
         if self.next_cell is None or self.future_cell is None:
-            self.textures.append(self.textures[0])
+            if len(self.textures) > 0:
+                self.textures.append(self.textures[0])
             self.x += self.move_now[0]
             self.rect.x = self.x
-            if self.rect.center[0] == int(-self.cell.cell_size[0]/2) or self.rect.center[0] == int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0]:
+            if int(-self.cell.cell_size[0]/2)-SPEED/2 <=self.rect.center[0] <= int(-self.cell.cell_size[0]/2)+SPEED/2 or (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])-SPEED/2 <= self.rect.center[0] <= (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])+SPEED/2:
                 if self.rect.center[0] < 0:
                     self.rect.center = get_cell_by_cord((self.cell.cord[0]+27, self.cell.cord[1]), self.cells).rect.center
                 else:

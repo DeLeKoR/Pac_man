@@ -4,6 +4,7 @@ class Point(pg.sprite.Sprite):
     def __init__(self, screen, cord, type:int = 1):
         super().__init__()
         self.screen = screen
+        self.type = type
         self.size = (10, 10) if type == 1 else (20, 20)
         self.value = 10 if type == 1 else 50
         picture = pg.image.load('images/Point.png')

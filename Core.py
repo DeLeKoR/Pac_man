@@ -29,5 +29,5 @@ while True:
     game.create_frame()
     game.draw_frame()
 
-    clock.tick(180)
+    clock.tick(FPS)
     pg.display.update()

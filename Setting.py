@@ -34,7 +34,9 @@ SCREEN_SIZE = (1000, 700)
 PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
 BG_COLOR = (5, 5, 20)
 
-SPEED = 1
+SPEED = 2
+
+FPS = 60
 
 PAC_MAN_IMG_PASS = "images/Pac_man.png"
 MAP_IMG_PASS = "images/pac_man_map.jpeg"
