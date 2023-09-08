@@ -9,10 +9,9 @@ class Game:
     def __init__(self, screen, fps: int = 0):
         self.screen = screen
         self.fps = fps
-        self.fright = [False]
         self.map = Map(self.screen)
-        self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells)
         self.enemies = pg.sprite.Group()
+        self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)
         self.create_enemies()
         self.score_board = Score_board(self.screen)
 
@@ -26,9 +25,9 @@ class Game:
         self.score_board.draw_board(self.fps)
 
     def create_frame(self):
-        self.pac_man.eat_point(self.score_board.score, self.fright)
+        self.pac_man.eat_point(self.score_board.score)
         self.pac_man.move()
-        #self.enemies.update()
+        self.enemies.update()
         self.map.create_meal()
 
     def create_enemies(self): 

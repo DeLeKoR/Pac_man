@@ -1,21 +1,22 @@
 from Setting import *
 from Entity import Entity
-from Basic_func import get_cell_by_cord
+from Basic_func import get_cell_by_cord, sing_number
 import random
 
 class Ghost(Entity):
     def __init__(self, cell, cells, screen, image, color_type, retreat_cell, ghost_in_house, pac_man):
         super().__init__(screen, cell, cells)
-        picture_ghost = pg.image.load(image)
-        picture_scared_ghost = pg.image.load(scared_ghost)
-        self.base_image = pg.transform.scale(picture_ghost, self.size) # основное изображение у призрака
-        self.scared_image = pg.transform.scale(picture_scared_ghost, (50, 40)) # изображение призрака, когда он испуган 
-        self.image = self.base_image
-        self.start_cords = cell.cord
+        picture_ghost = pg.image.load(image) 
+        picture_scared_ghost = pg.image.load(scared_ghost) 
+        self.base_image = pg.transform.scale(picture_ghost, self.size) # основное изображение призрака
+        self.scared_image = pg.transform.scale(picture_scared_ghost, (50, 40))  # изображение испуганного призрака
+        self.image = self.base_image # текущее изибражение
+        self.start_cords = cell.cord # начальное положение 
         self.ghost_in_house = ghost_in_house # равен True, если призрак в доме
-        self.color_type = color_type
+        self.color_type = color_type # тип цвета призрака
         self.retreat_cell = retreat_cell # целевая клетка отступления
         self.target = None # целевая клетка призрака
+        self.speed = SPEED
         self.pac_man = pac_man
         self.mode_now = "run"
         self.mode_first = "attack"
@@ -26,15 +27,15 @@ class Ghost(Entity):
     def start_move(self):
         """Приводит призраков в движение"""
         if self.color_type == "red":
-            self.move_future = (-SPEED, 0)
-            self.move_now = (-SPEED, 0)
+            self.move_future = (-self.speed, 0)
+            self.move_now = (-self.speed, 0)
             self.target = self.retreat_cell
             self.ghost_in_house = False
+            self.move()
         else:
             self.target = start_points[0]
         self.activity = True 
         self.start_time = pg.time.get_ticks()
-        self.move()
 
     def draw_enemy(self):
         self.draw(self.image)
@@ -74,23 +75,26 @@ class Ghost(Entity):
         """Изменяет режим у призрака"""
         self.mode_now, self.mode_first = self.mode_first, self.mode_now 
         if self.mode_first == "scare":
-            self.image = self.base_image
-            if self.mode_now == "run":
-                self.mode_first = "attack"
-            else:
-                self.mode_first = "run"
+            self.scare_mode_off()
         if self.mode_now == "run":
             self.target = self.retreat_cell
             
         self.move_future = self.move_now[0] * (-1), self.move_now[1] * (-1)     
         self.start_time = pg.time.get_ticks()
     
-    def scare_mode(self):
+    def scare_mode_on(self):
         """Режим испуга призрака"""
         self.image = self.scared_image
         self.mode_first = self.mode_now
         self.mode_now = "scare"
         self.start_time = pg.time.get_ticks()
+
+    def scare_mode_off(self):
+        self.image = self.base_image
+        if self.mode_now == "run":
+            self.mode_first = "attack"
+        else:
+            self.mode_first = "run"
 
     # ВЫВОД ПРИЗРАКОВ ИЗ ИХ ДОМА
 
@@ -99,27 +103,27 @@ class Ghost(Entity):
         dif_cords = (self.target[0] - self.cell.cord[0], self.target[1] - self.cell.cord[1]) # определяем направление
 
         if dif_cords[0] > 0 and self.cell.cord == self.start_cords:
-            self.move_future = (SPEED, 0)
+            self.move_future = (self.speed, 0)
 
         elif dif_cords[0] < 0 and self.cell.cord == self.start_cords:
-            self.move_future = (-SPEED, 0)
+            self.move_future = (-self.speed, 0)
         
         elif dif_cords[0] == 0 and self.cell.cord == self.start_cords:
-            self.move_future = (0, -SPEED)
+            self.move_future = (0, -self.speed)
             self.target = start_points[1]
 
         elif dif_cords[0] > 0 and self.cell.cord[0] + 1 == self.target[0]:
-            self.move_future = (0, -SPEED)
+            self.move_future = (0, -self.speed)
             self.target = start_points[1]
         
         elif dif_cords[0] < 0 and self.cell.cord[0] - 1 == self.target[0]:
-            self.move_future = (0, -SPEED)
+            self.move_future = (0, -self.speed)
             self.target = start_points[1]
         
         elif self.cell.cord[1] - 1 == self.target[1]:
             self.ghost_in_house = False
             self.target = self.retreat_cell
-            random_move = random.choice((SPEED, -SPEED))
+            random_move = random.choice((self.speed, -self.speed))
             self.move_future = (-random_move, 0)
 
     # ФУНКЦИИ, ИЗМЕНЯЮЩИЕ НАПРАВЛЕНИЕ У ПРИЗРАКА, КОГДА ОН ДВИЖИТСЯ ПО ЛАБИРИНТУ
@@ -131,14 +135,19 @@ class Ghost(Entity):
                 return True
         return False
     
+    def create_move(self, x, y):
+        move_x = (x - self.future_cell.cord[0]) * self.speed
+        move_y = (y - self.future_cell.cord[1]) * self.speed
+        self.move_future = (move_x, move_y)
+
     def change_direction(self):
         "Изменяет направление призрака, если впереди него стена"
         try:
             next_cell = self.get_next_cell()
             if not next_cell.type:
-                side_cells_cord = self.get_side_cells() # получаем клетоки, расположенные по бокам от целевой
+                side_cells_cord = self.get_side_cells() # получаем клетки, расположенные по бокам от целевой
                 cells = self.filter_cells(side_cells_cord) # получаем клеки, по которым призрак сможет идти 
-                self.move_future = (cells[0].cord[0] - self.future_cell.cord[0], cells[0].cord[1] - self.future_cell.cord[1]) 
+                self.create_move(cells[0].cord[0], cells[0].cord[1])
         except AttributeError:
             pass
 
@@ -151,18 +160,21 @@ class Ghost(Entity):
             cell = self.choose_cell(list_cells)
         else:
             cell = random.choice(list_cells)
-        self.move_future = (cell.cord[0] - self.future_cell.cord[0], cell.cord[1] - self.future_cell.cord[1])
-    
+
+        self.create_move(cell.cord[0], cell.cord[1])
+        
     def get_next_cell(self):
         """Возращает клетку, рассположенную впереди клетки, к которой призрак движется"""
-        next_cell = (self.future_cell.cord[0] + self.move_future[0], self.future_cell.cord[1] + self.move_future[1])
-        return get_cell_by_cord(next_cell, self.cells)
+        move_x, move_y = sing_number(self.move_future[0]), sing_number(self.move_future[1])
+        cords = (self.future_cell.cord[0] + move_x, self.future_cell.cord[1] + move_y)
+        return get_cell_by_cord(cords, self.cells) 
 
     def get_side_cells(self):
         """Находит клетки, расположенные по бокам от передней клетки"""
         result = []
         for side in (-1, 1):
-            cord = self.future_cell.cord[0] + self.move_now[1] * side, self.future_cell.cord[1] + self.move_now[0] * side 
+            move_x, move_y = sing_number(self.move_now[0]), sing_number(self.move_now[1]) # получаем направление призрака
+            cord = self.future_cell.cord[0] + move_y * side, self.future_cell.cord[1] + move_x * side # координаты боковой клетки
             cell = get_cell_by_cord(cord, self.cells)
             result.append(cell)
         return result
