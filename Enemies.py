@@ -8,19 +8,20 @@ class Ghost(Entity):
         super().__init__(screen, cell, cells)
         picture_ghost = pg.image.load(image) 
         picture_scared_ghost = pg.image.load(scared_ghost) 
+        self.size = (50, 40)
         self.base_image = pg.transform.scale(picture_ghost, self.size) # основное изображение призрака
-        self.scared_image = pg.transform.scale(picture_scared_ghost, (50, 40))  # изображение испуганного призрака
+        self.scared_image = pg.transform.scale(picture_scared_ghost, self.size)  # изображение испуганного призрака
         self.image = self.base_image # текущее изибражение
         self.start_cords = cell.cord # начальное положение 
         self.ghost_in_house = ghost_in_house # равен True, если призрак в доме
         self.color_type = color_type # тип цвета призрака
         self.retreat_cell = retreat_cell # целевая клетка отступления
         self.target = None # целевая клетка призрака
-        self.speed = SPEED
+        self.speed = SPEED_GHOST
         self.pac_man = pac_man
         self.mode_now = "run"
         self.mode_first = "attack"
-        self.times_modes = [7, 20, 7, 20, 5, 20, 5, 40]
+        self.times_modes = [7, 20, 7, 20, 5, 20, 5]
         self.index_mode = 0
         self.start_move()
 
@@ -42,8 +43,6 @@ class Ghost(Entity):
 
     def update(self):
         self.check_time()
-        if self.mode_now == "attack":
-            self.target = self.pac_man.cell.cord
         if not self.ghost_in_house:
             if self.check_future_cell():
                 self.select_direction()
@@ -59,15 +58,12 @@ class Ghost(Entity):
         """Проверка времени действия текущего режима"""
         current_time = pg.time.get_ticks()
         different = (current_time - self.start_time) / 1000
-        if self.mode_now != "scare":
+        if self.mode_now != "scare" and self.index_mode < len(self.times_modes):
             time_mode = self.times_modes[self.index_mode]
             if different >= time_mode:
-                if time_mode != self.times_modes[-1]:
-                    self.index_mode += 1
-                elif time_mode == self.times_modes[-1]:
-                    self.index_mode = 0
+                self.index_mode += 1
                 self.change_mode()
-        else:
+        elif self.mode_now == "scare":
             if different >= 10:
                 self.change_mode()
 
@@ -84,9 +80,10 @@ class Ghost(Entity):
     
     def scare_mode_on(self):
         """Режим испуга призрака"""
-        self.image = self.scared_image
-        self.mode_first = self.mode_now
-        self.mode_now = "scare"
+        if self.mode_now != "scare":
+            self.image = self.scared_image
+            self.mode_first = self.mode_now
+            self.mode_now = "scare"
         self.start_time = pg.time.get_ticks()
 
     def scare_mode_off(self):
@@ -95,6 +92,42 @@ class Ghost(Entity):
             self.mode_first = "attack"
         else:
             self.mode_first = "run"
+
+    # ОПРЕДЕЛЕНИЕ ЦЕЛЕВОЙ КЛЕТКИ У ПРИЗРАКОВ В РЕЖИМЕ АТАКИ
+    
+    def count_target_ghosts(self, cord_red):
+        """Определяет какому призраку нужно изменить целевую клетку"""  
+        move = sing_number(self.pac_man.move_now[0]), sing_number(self.pac_man.move_now[1]) # получаем направление пак мана
+        pacman_cord = self.pac_man.cell.cord
+
+        if self.color_type == "red":
+            self.count_target_red(pacman_cord)
+        elif self.color_type == "blue":
+            self.count_target_blue(move, pacman_cord, cord_red)    
+        elif self.color_type == "pink":
+            self.count_target_pink(move, pacman_cord)
+        elif self.color_type == "yellow":
+            self.count_target_yellow(pacman_cord)
+
+    def count_target_red(self, cord):
+        self.target = cord
+
+    def count_target_pink(self, move, cord):
+        self.target = cord[0] + 4 * move[0], cord[1] + 4 * move[1] # получаем координаты клетки на 4 клетки перед пак маном
+
+    def count_target_blue(self, move, cord, cord_red):
+        front_cell = cord[0] + 2 * move[0], cord[1] + 2 * move[1] # получаем координаты клетки на 2 клетки перед пак маном
+        dif_x = abs(front_cell[0] - cord_red[0])
+        dif_y = abs(front_cell[1] - cord_red[1])
+        x, y = dif_x * 2 + cord_red[0], dif_y * 2 + cord_red[1]
+        self.target = (x, y)
+    
+    def count_target_yellow(self, cord):
+        distance = self.count_distance(self.cell.cord, cord) # получаем растояние от призрака до пак мана
+        if distance >= 8:
+            self.target = self.pac_man.cell.cord
+        else:
+            self.target = self.retreat_cell
 
     # ВЫВОД ПРИЗРАКОВ ИЗ ИХ ДОМА
 
@@ -184,23 +217,21 @@ class Ghost(Entity):
         return [cell for cell in list_cells if cell.type]
     
     def choose_cell(self, list_cells):
-        list_distances = self.count_distance(list_cells)
+        list_distances = []
+        for cell in list_cells:
+            distance = self.count_distance(cell.cord, self.target)
+            list_distances.append(distance)
         min_distance = min(list_distances)
         index = list_distances.index(min_distance)
         return list_cells[index] 
 
-    def count_distance(self, list_cells):
-        """Находит расстояние от одной клетки (к которой призрак должен повернуть) до целевой"""
-        list_distances = []
-        for cell in list_cells:
-            if cell.cord[0] == self.target[0]:
-                d = abs(cell.cord[1] - self.target[1])
-            elif cell.cord[1] == self.target[1]:
-                d = abs(cell.cord[0] - self.target[0])
-            else:
-                x, y = cell.cord[0] - self.target[0], cell.cord[1] - self.target[1]
-                d = (x ** 2 + y ** 2) ** 0.5
-            list_distances.append(round(d, 2)) 
-        return list_distances
-
-
+    def count_distance(self, cord_1, cord_2):
+        """Находит расстояние от одной точки до другой"""
+        if cord_1[0] == cord_2[0]:
+            d = abs(cord_1[1] - cord_2[1])
+        elif cord_1[1] == cord_2[1]:
+            d = abs(cord_1[0] - cord_2[0])
+        else:
+            x, y = cord_1[0] - cord_2[0], cord_1[1] - cord_2[1]
+            d = (x ** 2 + y ** 2) ** 0.5
+        return round(d, 2)

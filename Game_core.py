@@ -11,6 +11,7 @@ class Game:
         self.fps = fps
         self.map = Map(self.screen)
         self.enemies = pg.sprite.Group()
+        self.cord_red = (14, 11)
         self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)
         self.create_enemies()
         self.score_board = Score_board(self.screen)
@@ -27,7 +28,7 @@ class Game:
     def create_frame(self):
         self.pac_man.eat_point(self.score_board.score)
         self.pac_man.move()
-        self.enemies.update()
+        self.update_ghosts()
         self.map.create_meal()
 
     def create_enemies(self): 
@@ -36,4 +37,10 @@ class Game:
             ghost = Ghost(cell, self.map.cells, self.screen, image, color_type, retreat, True, self.pac_man)
             self.enemies.add(ghost)
 
-
+    def update_ghosts(self):
+        for enemy in self.enemies:
+            if enemy.mode_now == "attack": 
+                if enemy.color_type == "red":
+                    self.cord_red = enemy.cell.cord
+                enemy.count_target_ghosts(self.cord_red) 
+            enemy.update()

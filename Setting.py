@@ -11,12 +11,12 @@ red_ghost = os.path.join(images_folder, "red_ghost.png")
 scared_ghost = os.path.join(images_folder, "scared_ghost.png")
 
 # настройка призраков
-images_ghosts = (blue_ghost, pink_ghost, yellow_ghost, red_ghost)
-cords_ghosts = ((12, 14), (14, 14), (16, 14), (14, 11)) # координаты клеток, на которых сторят призраки в начале игры
-ghosts_colors = ("blue", "pink", "yellow", "red") 
+images_ghosts = (red_ghost, blue_ghost, pink_ghost, yellow_ghost)
+cords_ghosts = ((14, 11), (12, 14), (14, 14), (16, 14)) # координаты клеток, на которых сторят призраки в начале игры
+ghosts_colors = ("red", "blue", "pink", "yellow") 
 act_ghosts = False
 start_points = [(14, 14), (14, 11)] # целевые клетки призраков в доме
-retreat_cords = ((26, 29), (1, 1), (1, 29), (26, 1)) # координаты клеток отступления
+retreat_cords = ((26, 1), (26, 29), (1, 1), (1, 29)) # координаты клеток отступления
 dir_select_cells = {
     1: (6, 21),
     5: (1, 6, 9, 12, 15, 18, 21, 26),
@@ -34,7 +34,8 @@ SCREEN_SIZE = (1000, 700)
 PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
 BG_COLOR = (5, 5, 20)
 
-SPEED = 2
+SPEED = 3
+SPEED_GHOST = 2.5
 
 FPS = 60
 
