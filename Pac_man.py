@@ -27,3 +27,16 @@ class Pac_man(Entity):
             cell.meal.kill()
             score[0] += cell.meal.value
             cell.meal = None
+
+    def interaction(self, restart, lives):
+        """Определение соприкосновения пакмена с призраком"""
+        for enemy in self.enemies:
+            if self.rect.colliderect(enemy):
+                if enemy.mode_now == 'scare':
+                    pass # сюда вписать функцию для съедения призрака
+                else:
+                    if lives[0]:
+                        restart(0)
+                        lives[0] -= 1
+                    else:
+                        restart(1)

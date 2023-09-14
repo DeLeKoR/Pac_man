@@ -53,7 +53,7 @@ class Map:
         if self.score and self.score < 1800:
             self.draw_meal()
             self.score += 1
-        elif self.score == 1800:
+        elif self.score == 600:
             self.score = 0
             for meal in self.meal:
                 meal.kill()
@@ -79,7 +79,7 @@ class Map:
 class Cell(pg.sprite.Sprite):
     def __init__(self, coord, type, place_select):
         super().__init__()
-        self.cell_size = (int(PLAY_BOARD_SIZE[0]/27), int(PLAY_BOARD_SIZE[1]/30))
+        self.cell_size = (PLAY_BOARD_SIZE[0]/len(MAP[0]), PLAY_BOARD_SIZE[1]/len(MAP))
         self.cord = coord
         self.real_cord = (self.cord[0] * self.cell_size[0], self.cord[1] * self.cell_size[1])
         self.rect = pg.Rect(self.cord[0] * self.cell_size[0], self.cord[1] * self.cell_size[1], self.cell_size[0], self.cell_size[1])
