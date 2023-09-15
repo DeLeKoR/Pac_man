@@ -23,6 +23,7 @@ class Ghost(Entity):
         self.mode_first = "attack"
         self.times_modes = [7, 20, 7, 20, 5, 20, 5]
         self.index_mode = 0
+        self.kill_ghost = False
         self.start_move()
 
     def start_move(self):
@@ -32,24 +33,25 @@ class Ghost(Entity):
             self.move_now = (-self.speed, 0)
             self.target = self.retreat_cell
             self.ghost_in_house = False
-            self.move()
         else:
             self.target = start_points[0]
-        self.activity = True 
+            self.create_move(self.target, self.cell.cord)
+        self.move()
         self.start_time = pg.time.get_ticks()
 
     def draw_enemy(self):
         self.draw(self.image)
 
     def update(self):
-        self.check_time()
         if not self.ghost_in_house:
+            if not self.kill_ghost:
+                self.check_time()
             if self.check_future_cell():
                 self.select_direction()
             else:
                 self.change_direction()
         elif self.ghost_in_house:
-            self.get_out()
+            self.move_in_home()
         self.move()
 
     # ИЗМЕНЕНИЕ РЕЖИМОВ У ПРИЗРАКОВ
@@ -74,7 +76,7 @@ class Ghost(Entity):
             self.scare_mode_off()
         if self.mode_now == "run":
             self.target = self.retreat_cell
-            
+
         self.move_future = self.move_now[0] * (-1), self.move_now[1] * (-1)     
         self.start_time = pg.time.get_ticks()
     
@@ -92,6 +94,12 @@ class Ghost(Entity):
             self.mode_first = "attack"
         else:
             self.mode_first = "run"
+
+    def kill_mode(self):
+        """Режим, который срабатывает, когда призрака съедает пак ман"""
+        # меняем изображение призрака
+        self.target = start_points[1]
+        self.kill_ghost = True
 
     # ОПРЕДЕЛЕНИЕ ЦЕЛЕВОЙ КЛЕТКИ У ПРИЗРАКОВ В РЕЖИМЕ АТАКИ
     
@@ -131,34 +139,28 @@ class Ghost(Entity):
 
     # ВЫВОД ПРИЗРАКОВ ИЗ ИХ ДОМА
 
-    def get_out(self):
+    def move_in_home(self):
         "Заставляет призраков выйти из дома"
-        dif_cords = (self.target[0] - self.cell.cord[0], self.target[1] - self.cell.cord[1]) # определяем направление
-
-        if dif_cords[0] > 0 and self.cell.cord == self.start_cords:
-            self.move_future = (self.speed, 0)
-
-        elif dif_cords[0] < 0 and self.cell.cord == self.start_cords:
-            self.move_future = (-self.speed, 0)
-        
-        elif dif_cords[0] == 0 and self.cell.cord == self.start_cords:
-            self.move_future = (0, -self.speed)
-            self.target = start_points[1]
-
-        elif dif_cords[0] > 0 and self.cell.cord[0] + 1 == self.target[0]:
-            self.move_future = (0, -self.speed)
-            self.target = start_points[1]
-        
-        elif dif_cords[0] < 0 and self.cell.cord[0] - 1 == self.target[0]:
-            self.move_future = (0, -self.speed)
-            self.target = start_points[1]
-        
-        elif self.cell.cord[1] - 1 == self.target[1]:
-            self.ghost_in_house = False
-            self.target = self.retreat_cell
-            random_move = random.choice((self.speed, -self.speed))
-            self.move_future = (-random_move, 0)
-
+        if not self.kill_ghost:
+            if self.future_cell.cord == start_points[0]:
+                self.target = start_points[1]
+                self.move_future = (0, -self.speed)
+            elif self.future_cell.cord == start_points[1]:
+                self.ghost_in_house = False
+                self.target = self.retreat_cell
+                random_move = random.choice((self.speed, -self.speed))
+                self.move_future = (random_move, 0)
+        else:
+            if self.future_cell.cord == start_points[0] and self.future_cell.cord != self.start_cords:
+                self.target = self.start_cords
+                self.create_move(self.target, self.future_cell.cord)
+            elif self.future_cell.cord == self.start_cords:
+                self.kill_ghost = False
+                self.image = self.base_image
+                self.target = start_points[0]
+                self.create_move(self.target, self.cell.cord)
+                self.start_time = pg.time.get_ticks()
+                
     # ФУНКЦИИ, ИЗМЕНЯЮЩИЕ НАПРАВЛЕНИЕ У ПРИЗРАКА, КОГДА ОН ДВИЖИТСЯ ПО ЛАБИРИНТУ
 
     def check_future_cell(self):
@@ -168,11 +170,11 @@ class Ghost(Entity):
                 return True
         return False
     
-    def create_move(self, x, y):
-        move_x = (x - self.future_cell.cord[0]) * self.speed
-        move_y = (y - self.future_cell.cord[1]) * self.speed
-        self.move_future = (move_x, move_y)
-
+    def create_move(self, target, cell):
+        move_x = sing_number(target[0] - cell[0]) 
+        move_y = sing_number(target[1] - cell[1])
+        self.move_future = (move_x * self.speed, move_y * self.speed) # определяем направление
+        
     def change_direction(self):
         "Изменяет направление призрака, если впереди него стена"
         try:
@@ -180,7 +182,7 @@ class Ghost(Entity):
             if not next_cell.type:
                 side_cells_cord = self.get_side_cells() # получаем клетки, расположенные по бокам от целевой
                 cells = self.filter_cells(side_cells_cord) # получаем клеки, по которым призрак сможет идти 
-                self.create_move(cells[0].cord[0], cells[0].cord[1])
+                self.create_move(cells[0].cord, self.future_cell.cord)
         except AttributeError:
             pass
 
@@ -189,12 +191,12 @@ class Ghost(Entity):
         next_cell = self.get_next_cell()
         side_cells = self.get_side_cells()
         list_cells = self.filter_cells((next_cell, *side_cells))
-        if self.mode_now != "scare":
+        if self.mode_now != "scare" or self.kill_ghost:
             cell = self.choose_cell(list_cells)
         else:
             cell = random.choice(list_cells)
 
-        self.create_move(cell.cord[0], cell.cord[1])
+        self.create_move(cell.cord, self.future_cell.cord)
         
     def get_next_cell(self):
         """Возращает клетку, рассположенную впереди клетки, к которой призрак движется"""

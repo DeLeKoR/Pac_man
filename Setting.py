@@ -14,7 +14,6 @@ scared_ghost = os.path.join(images_folder, "scared_ghost.png")
 images_ghosts = (red_ghost, blue_ghost, pink_ghost, yellow_ghost)
 cords_ghosts = ((14, 11), (12, 14), (14, 14), (16, 14)) # координаты клеток, на которых сторят призраки в начале игры
 ghosts_colors = ("red", "blue", "pink", "yellow") 
-act_ghosts = False
 start_points = [(14, 14), (14, 11)] # целевые клетки призраков в доме
 retreat_cords = ((26, 1), (26, 29), (1, 1), (1, 29)) # координаты клеток отступления
 dir_select_cells = {

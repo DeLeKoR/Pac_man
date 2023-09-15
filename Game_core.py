@@ -46,6 +46,11 @@ class Game:
                 if enemy.color_type == "red":
                     self.cord_red = enemy.cell.cord
                 enemy.count_target_ghosts(self.cord_red) 
+            elif enemy.kill_ghost and enemy.future_cell.cord == enemy.target:
+                enemy.ghost_in_house = True
+                enemy.target = start_points[0]
+                enemy.move_future = (0, enemy.speed)
+                enemy.move()
             enemy.update()
 
     def restart(self, ask: bool = False):
