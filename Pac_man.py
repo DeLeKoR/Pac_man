@@ -14,16 +14,16 @@ class Pac_man(Entity):
 
     def eat_point(self, score):
         cell = get_cell(self.rect.center, self.cells)
-        if cell is not None and ((cell.rect.centerx - SPEED/2 <= self.rect.centerx <= cell.rect.centerx + SPEED/2)
-                    and (cell.rect.centery - SPEED/2 <= self.rect.centery <= cell.rect.centery + SPEED/2)) and cell.point is not None:
+        if cell is not None and ((cell.rect.centerx - self.speed/2 <= self.rect.centerx <= cell.rect.centerx + self.speed/2)
+                    and (cell.rect.centery - self.speed/2 <= self.rect.centery <= cell.rect.centery + self.speed/2)) and cell.point is not None:
             score[0] += cell.point.value
             if cell.point.type == 3:
                 for enemy in self.enemies:
                     enemy.scare_mode_on()
             cell.point.kill()
             cell.point = None
-        if cell is not None and ((cell.rect.centerx - SPEED/2 <= self.rect.centerx <= cell.rect.centerx + SPEED/2)
-                    and (cell.rect.centery - SPEED/2 <= self.rect.centery <= cell.rect.centery + SPEED/2)) and cell.meal is not None:
+        if cell is not None and ((cell.rect.centerx - self.speed/2 <= self.rect.centerx <= cell.rect.centerx + self.speed/2)
+                    and (cell.rect.centery - self.speed/2 <= self.rect.centery <= cell.rect.centery + self.speed/2)) and cell.meal is not None:
             cell.meal.kill()
             score[0] += cell.meal.value
             cell.meal = None

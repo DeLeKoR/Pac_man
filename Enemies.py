@@ -17,7 +17,6 @@ class Ghost(Entity):
         self.color_type = color_type # тип цвета призрака
         self.retreat_cell = retreat_cell # целевая клетка отступления
         self.target = None # целевая клетка призрака
-        self.speed = SPEED_GHOST
         self.pac_man = pac_man
         self.mode_now = "run"
         self.mode_first = "attack"

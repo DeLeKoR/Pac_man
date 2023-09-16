@@ -74,6 +74,9 @@ class Map:
             for meal in self.meal:
                 meal.draw()
 
+    def check_points(self):
+        return False if len(self.points) else True
+
 
 
 class Cell(pg.sprite.Sprite):

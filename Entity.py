@@ -9,6 +9,8 @@ class Entity(pg.sprite.Sprite):
         # направление движения
         self.move_now = (0, 1)
         self.move_future = (0, 0)
+        # скорость объекта >=0.51
+        self.speed = 3
         # клетка на которой расположен объект
         self.cell = cell
         self.next_cell = None
@@ -27,8 +29,8 @@ class Entity(pg.sprite.Sprite):
             self.textures.pop(1)
         cell = get_cell(self.rect.center, self.cells)
         if cell is not None:
-            if ((cell.rect.centerx - SPEED/2 <= self.rect.centerx <= cell.rect.centerx + SPEED/2)
-                    and (cell.rect.centery - SPEED/2 <= self.rect.centery <= cell.rect.centery + SPEED/2)):
+            if ((cell.rect.centerx - self.speed/2 <= self.rect.centerx <= cell.rect.centerx + self.speed/2)
+                    and (cell.rect.centery - self.speed/2 <= self.rect.centery <= cell.rect.centery + self.speed/2)):
                 self.cell = cell
                 self.rect.center = self.cell.rect.center
                 self.x, self.y = self.rect.x, self.rect.y
@@ -43,7 +45,7 @@ class Entity(pg.sprite.Sprite):
                 self.textures.append(self.textures[0])
             self.x += self.move_now[0]
             self.rect.x = self.x
-            if int(-self.cell.cell_size[0]/2)-SPEED/2 <=self.rect.center[0] <= int(-self.cell.cell_size[0]/2)+SPEED/2 or (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])-SPEED/2 <= self.rect.center[0] <= (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])+SPEED/2:
+            if int(-self.cell.cell_size[0]/2)-self.speed/2 <=self.rect.center[0] <= int(-self.cell.cell_size[0]/2)+self.speed/2 or (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])-self.speed/2 <= self.rect.center[0] <= (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])+self.speed/2:
                 if self.rect.center[0] < 0:
                     self.rect.center = get_cell_by_cord((self.cell.cord[0]+27, self.cell.cord[1]), self.cells).rect.center
                 else:
