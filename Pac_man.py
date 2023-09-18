@@ -19,7 +19,8 @@ class Pac_man(Entity):
             score[0] += cell.point.value
             if cell.point.type == 3:
                 for enemy in self.enemies:
-                    enemy.scare_mode_on()
+                    if not enemy.ghost_in_house:
+                        enemy.scare_mode_on()
             cell.point.kill()
             cell.point = None
         if cell is not None and ((cell.rect.centerx - SPEED/2 <= self.rect.centerx <= cell.rect.centerx + SPEED/2)
