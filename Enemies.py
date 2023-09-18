@@ -11,13 +11,12 @@ class Ghost(Entity):
         self.size = (55, 45)
         self.base_image = pg.transform.scale(picture_ghost, self.size) # основное изображение призрака
         self.scared_image = pg.transform.scale(picture_scared_ghost, self.size)  # изображение испуганного призрака
-        self.image = self.base_image # текущее изибражение
-        self.start_cords = cell.cord # начальное положение призрака
-        self.ghost_in_house = ghost_in_house # равен True, если призрак в доме
-        self.color_type = color_type # тип цвета призрака
-        self.retreat_cell = retreat_cell # целевая клетка отступления
-        self.target = None # целевая клетка призрака
-        self.speed = 1.6
+        self.image = self.base_image    # текущее изибражение
+        self.start_cords = cell.cord    # начальное положение призрака
+        self.ghost_in_house = ghost_in_house    # равен True, если призрак в доме
+        self.color_type = color_type    # тип цвета призрака
+        self.retreat_cell = retreat_cell    # целевая клетка отступления
+        self.target = None  # целевая клетка призрака
         self.pac_man = pac_man
         self.mode_now = "run"
         self.mode_first = "attack"
@@ -29,7 +28,7 @@ class Ghost(Entity):
     def start_move(self):
         """Приводит призраков в движение"""
         if self.color_type == "red":
-            self.speed = SPEED_GHOST
+            self.speed = 2.5
             self.move_future = (-self.speed, 0)
             self.move_now = (-self.speed, 0)
             self.target = self.retreat_cell
@@ -37,6 +36,7 @@ class Ghost(Entity):
             self.start_cords = start_points[0]
         else:
             self.target = start_points[0]
+            self.speed = 1
             self.create_move(self.target, self.cell.cord)
         self.move()
         self.start_time = pg.time.get_ticks()
@@ -89,12 +89,12 @@ class Ghost(Entity):
             self.image = self.scared_image
             self.mode_first = self.mode_now
             self.mode_now = "scare"
-            self.speed = 1.6
+            self.speed = 1
         self.start_time = pg.time.get_ticks()
 
     def scare_mode_off(self):
         self.image = self.base_image
-        self.speed = SPEED_GHOST
+        self.speed = 2.5
         if self.mode_now == "run":
             self.mode_first = "attack"
         else:
@@ -105,7 +105,7 @@ class Ghost(Entity):
         # меняем изображение призрака
         self.target = start_points[1]
         self.kill_ghost = True
-        self.speed = 3.2
+        self.speed = 4
     # ОПРЕДЕЛЕНИЕ ЦЕЛЕВОЙ КЛЕТКИ У ПРИЗРАКОВ В РЕЖИМЕ АТАКИ
     
     def count_target_ghosts(self, cord_red):
@@ -162,7 +162,8 @@ class Ghost(Entity):
         elif self.future_cell.cord == start_points[2]:
             self.ghost_in_house = False
             self.target = self.retreat_cell
-            self.speed = SPEED_GHOST
+            self.speed = 2.5
+            self.move_future = (-self.speed, 0)
 
     def get_into(self):
         "Заставляет призраков войти в дом"
@@ -173,7 +174,7 @@ class Ghost(Entity):
             self.kill_ghost = False
             self.image = self.base_image
             self.target = start_points[0]
-            self.speed = 1.6
+            self.speed = 1
             self.create_move(self.target, self.cell.cord)
 
     # ФУНКЦИИ, ИЗМЕНЯЮЩИЕ НАПРАВЛЕНИЕ У ПРИЗРАКА, КОГДА ОН ДВИЖИТСЯ ПО ЛАБИРИНТУ

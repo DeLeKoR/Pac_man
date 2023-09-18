@@ -11,6 +11,7 @@ class Game:
         self.fps = fps
         self.pause = True
         self.lives = [3]
+        self.level = 1
         self.map = Map(self.screen)
         self.enemies = pg.sprite.Group()
         self.cord_red = (14, 11)
@@ -25,9 +26,12 @@ class Game:
         self.pac_man.draw_pac_man()
         for enemy in self.enemies:
             enemy.draw_enemy()
-        self.score_board.draw_board(self.fps, self.lives)
+        self.score_board.draw_board(self.fps, self.lives, self.level)
 
     def create_frame(self):
+        if self.map.check_points():
+            self.restart(2)
+            self.level += 1
         self.pac_man.move()
         self.pac_man.eat_point(self.score_board.score)
         self.pac_man.interaction(self.restart, self.lives)
@@ -53,16 +57,18 @@ class Game:
                 enemy.move()
             enemy.update()
 
-    def restart(self, ask: bool = False):
+    def restart(self, ask: int = 0):
         """
         Перезапускает игру
         False = перезапуск призраков и пакмена
         True = полный перезапуск игры
         """
-        if ask:
+        if ask == 1 or ask == 2:
             self.lives = [3]
             self.map = Map(self.screen)
+        if ask == 1:
             self.score_board = Score_board(self.screen)
+            self.level = 1
         self.enemies.empty()
         self.cord_red = (14, 11)
         self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)
