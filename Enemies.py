@@ -27,8 +27,8 @@ class Ghost(Entity):
     def start_move(self):
         """Приводит призраков в движение"""
         if self.color_type == "red":
-            self.move_future = (-self.speed, 0)
-            self.move_now = (-self.speed, 0)
+            self.move_future = [-self.speed, 0]
+            self.move_now = [-self.speed, 0]
             self.target = self.retreat_cell
             self.ghost_in_house = False
             self.move()
@@ -74,7 +74,7 @@ class Ghost(Entity):
         if self.mode_now == "run":
             self.target = self.retreat_cell
             
-        self.move_future = self.move_now[0] * (-1), self.move_now[1] * (-1)     
+        self.move_future = [self.move_now[0] * (-1), self.move_now[1] * (-1)]
         self.start_time = pg.time.get_ticks()
     
     def scare_mode_on(self):
@@ -135,28 +135,28 @@ class Ghost(Entity):
         dif_cords = (self.target[0] - self.cell.cord[0], self.target[1] - self.cell.cord[1]) # определяем направление
 
         if dif_cords[0] > 0 and self.cell.cord == self.start_cords:
-            self.move_future = (self.speed, 0)
+            self.move_future = [self.speed, 0]
 
         elif dif_cords[0] < 0 and self.cell.cord == self.start_cords:
-            self.move_future = (-self.speed, 0)
+            self.move_future = [-self.speed, 0]
         
         elif dif_cords[0] == 0 and self.cell.cord == self.start_cords:
-            self.move_future = (0, -self.speed)
+            self.move_future = [0, -self.speed]
             self.target = start_points[1]
 
         elif dif_cords[0] > 0 and self.cell.cord[0] + 1 == self.target[0]:
-            self.move_future = (0, -self.speed)
+            self.move_future = [0, -self.speed]
             self.target = start_points[1]
         
         elif dif_cords[0] < 0 and self.cell.cord[0] - 1 == self.target[0]:
-            self.move_future = (0, -self.speed)
+            self.move_future = [0, -self.speed]
             self.target = start_points[1]
         
         elif self.cell.cord[1] - 1 == self.target[1]:
             self.ghost_in_house = False
             self.target = self.retreat_cell
             random_move = random.choice((self.speed, -self.speed))
-            self.move_future = (-random_move, 0)
+            self.move_future = [-random_move, 0]
 
     # ФУНКЦИИ, ИЗМЕНЯЮЩИЕ НАПРАВЛЕНИЕ У ПРИЗРАКА, КОГДА ОН ДВИЖИТСЯ ПО ЛАБИРИНТУ
 
@@ -170,7 +170,7 @@ class Ghost(Entity):
     def create_move(self, x, y):
         move_x = (x - self.future_cell.cord[0]) * self.speed
         move_y = (y - self.future_cell.cord[1]) * self.speed
-        self.move_future = (move_x, move_y)
+        self.move_future = [move_x, move_y]
 
     def change_direction(self):
         "Изменяет направление призрака, если впереди него стена"

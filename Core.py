@@ -18,13 +18,13 @@ while True:
         if event.type == pg.KEYDOWN:
             if game.pause:
                 if event.key == pg.K_w or event.key == pg.K_UP:
-                    game.pac_man.move_future = (0, -game.pac_man.speed)
+                    game.pac_man.move_future = [0, -game.pac_man.speed]
                 elif event.key == pg.K_s or event.key == pg.K_DOWN:
-                    game.pac_man.move_future = (0, game.pac_man.speed)
+                    game.pac_man.move_future = [0, game.pac_man.speed]
                 elif event.key == pg.K_a or event.key == pg.K_LEFT:
-                    game.pac_man.move_future = (-game.pac_man.speed, 0)
+                    game.pac_man.move_future = [-game.pac_man.speed, 0]
                 elif event.key == pg.K_d or event.key == pg.K_RIGHT:
-                    game.pac_man.move_future = (game.pac_man.speed, 0)
+                    game.pac_man.move_future = [game.pac_man.speed, 0]
             if event.key == pg.K_ESCAPE:
                 game.pause ^= True
     if game.pause:

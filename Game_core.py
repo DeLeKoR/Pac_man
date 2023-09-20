@@ -59,7 +59,6 @@ class Game:
         True = полный перезапуск игры
         """
         if ask == 1 or ask == 2:
-            self.lives = [3]
             self.map = Map(self.screen)
         if ask == 1:
             self.score_board = Score_board(self.screen)
