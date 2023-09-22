@@ -3,7 +3,7 @@ from Map import *
 from Enemies import *
 from Pac_man import *
 from Basic_func import *
-from Score_board import *
+from Information_board import *
 
 class Game:
     def __init__(self, screen, fps: int = 0):
@@ -11,29 +11,29 @@ class Game:
         self.fps = fps
         self.pause = True
         self.lives = [3]
+        self.score = [0]
         self.level = 1
         self.map = Map(self.screen)
         self.enemies = pg.sprite.Group()
         self.cord_red = (14, 11)
         self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)
         self.create_enemies()
-        self.score_board = Score_board(self.screen)
+        self.info_board = Information_board(self.screen)
 
     def draw_frame(self):
         self.map.draw_map()
-        self.map.draw_points()
         self.map.update_meal()
         self.pac_man.draw_pac_man()
         for enemy in self.enemies:
             enemy.draw_enemy()
-        self.score_board.draw_board(self.fps, self.lives, self.level)
+        self.info_board.draw_board(self.fps, self.lives, self.level, self.score)
 
     def create_frame(self):
         if self.map.check_points():
             self.restart(2)
             self.level += 1
         self.pac_man.move()
-        self.pac_man.eat_point(self.score_board.score)
+        self.pac_man.eat_point(self.score)
         self.pac_man.interaction(self.restart, self.lives)
         self.update_ghosts()
         self.map.create_meal()
@@ -61,7 +61,7 @@ class Game:
         if ask == 1 or ask == 2:
             self.map = Map(self.screen)
         if ask == 1:
-            self.score_board = Score_board(self.screen)
+            self.info_board = Information_board(self.screen)
             self.level = 1
         self.enemies.empty()
         self.cord_red = (14, 11)

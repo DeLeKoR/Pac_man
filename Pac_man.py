@@ -15,8 +15,8 @@ class Pac_man(Entity):
 
     def eat_point(self, score):
         cell = get_cell(self.rect.center, self.cells)
-        if (cell is not None and ((cell.rect.centerx - self.speed/2 <= self.centerx <= cell.rect.centerx + self.speed/2)
-                    and (cell.rect.centery - self.speed/2 <= self.centery <= cell.rect.centery + self.speed/2))):
+        if (cell is not None and ((cell.rect.centerx - self.speed / 2 <= self.centerx <= cell.rect.centerx + self.speed / 2)
+                    and (cell.rect.centery - self.speed / 2 <= self.centery <= cell.rect.centery + self.speed / 2))):
 
             if cell.point is not None:
                 score[0] += cell.point.value

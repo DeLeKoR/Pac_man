@@ -31,8 +31,8 @@ class Entity(pg.sprite.Sprite):
             self.textures.pop(1)
         cell = get_cell(self.rect.center, self.cells)
         if cell is not None:
-            if ((cell.rect.centerx - self.speed/2 <= self.centerx <= cell.rect.centerx + self.speed/2)
-                    and (cell.rect.centery - self.speed/2 <= self.centery <= cell.rect.centery + self.speed/2)):
+            if ((cell.rect.centerx - self.speed / 2 <= self.centerx <= cell.rect.centerx + self.speed / 2)
+                    and (cell.rect.centery - self.speed / 2 <= self.centery <= cell.rect.centery + self.speed / 2)):
                 self.cell = cell
                 self.rect.center = self.cell.rect.center
                 self.x, self.y = self.rect.x, self.rect.y
