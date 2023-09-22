@@ -22,7 +22,6 @@ class Game:
 
     def draw_frame(self):
         self.map.draw_map()
-        self.map.update_meal()
         self.pac_man.draw_pac_man()
         for enemy in self.enemies:
             enemy.draw_enemy()
@@ -33,7 +32,7 @@ class Game:
             self.restart(2)
             self.level += 1
         self.pac_man.move()
-        self.pac_man.eat_point(self.score)
+        self.pac_man.eat_point(self.score, self.map.numbers)
         self.pac_man.interaction(self.restart, self.lives)
         self.update_ghosts()
         self.map.create_meal()
@@ -63,6 +62,8 @@ class Game:
         if ask == 1:
             self.info_board = Information_board(self.screen)
             self.level = 1
+            self.score = [0]
+            self.lives = [2]
         self.enemies.empty()
         self.cord_red = (14, 11)
         self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)

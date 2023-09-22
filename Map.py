@@ -11,6 +11,7 @@ class Map:
         self.cells = pg.sprite.Group()
         self.points = pg.sprite.Group()
         self.meal = pg.sprite.Group()
+        self.numbers = pg.sprite.Group()
         self.create_cells()
         self.create_points()
         picture = pg.image.load(MAP_IMG_PASS)
@@ -20,6 +21,12 @@ class Map:
     def draw_map(self):
         self.surface_map.blit(self.image_map, (0, 0))
         self.draw_points()
+        self.update_meal()
+        for num in self.numbers:
+            if num.alfa <= 0:
+                num.kill()
+                continue
+            num.draw(self.surface_map)
         self.screen.blit(self.surface_map, self.surface_map_rect)
 
     def create_cells(self):
@@ -54,7 +61,7 @@ class Map:
                     self.points.add(point)
 
     def update_meal(self):
-        if self.score and self.score < 1800:
+        if self.score and self.score < 600:
             self.draw_meal()
             self.score += 1
         elif self.score == 600:
