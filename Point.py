@@ -5,15 +5,13 @@ class Point(pg.sprite.Sprite):
         super().__init__()
         self.screen = screen
         self.type = type
-        self.size = (10, 10) if type == 1 else (20, 20)
+        self.size = (5, 5) if type == 1 else (10, 10)
         self.value = 10 if type == 1 else 50
-        picture = pg.image.load('images/Point.png')
-        self.image = pg.transform.scale(picture, self.size)
-        self.rect = self.image.get_rect()
+        self.rect = pg.Rect((0, 0), self.size)
         self.rect.center = cord
 
     def draw(self):
-        self.screen.blit(self.image, (self.rect.x, self.rect.y))
+        pg.draw.circle(self.screen, (240, 240, 10), self.rect.center, self.size[0])
 
 class Meal(pg.sprite.Sprite):
     def __init__(self, screen, value, cord, type:int = 1):

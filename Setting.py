@@ -36,8 +36,8 @@ BG_COLOR = (5, 5, 20)
 
 FPS = 60
 
-PAC_MAN_IMG_PASS = "images/Pac_man.png"
-MAP_IMG_PASS = "images/pac_man_map.jpeg"
+PAC_MAN_IMG_PASS = f"{images_folder}/Pac_man.png"
+MAP_IMG_PASS = f"{images_folder}/pac_man_map.jpeg"
 
 MAP = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
