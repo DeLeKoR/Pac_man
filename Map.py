@@ -6,9 +6,12 @@ from Point import *
 class Map:
     def __init__(self, screen):
         self.screen = screen
+        self.surface_map = pg.Surface(PLAY_BOARD_SIZE)
+        self.surface_map_rect = self.surface_map.get_rect()
         self.cells = pg.sprite.Group()
         self.points = pg.sprite.Group()
         self.meal = pg.sprite.Group()
+        self.numbers = pg.sprite.Group()
         self.create_cells()
         self.create_points()
         picture = pg.image.load(MAP_IMG_PASS)
@@ -16,7 +19,15 @@ class Map:
         self.score = 0
 
     def draw_map(self):
-        self.screen.blit(self.image_map, (0, 0))
+        self.surface_map.blit(self.image_map, (0, 0))
+        self.draw_points()
+        self.update_meal()
+        for num in self.numbers:
+            if num.alfa <= 0:
+                num.kill()
+                continue
+            num.draw(self.surface_map)
+        self.screen.blit(self.surface_map, self.surface_map_rect)
 
     def create_cells(self):
         for y in range(len(MAP)):
@@ -29,7 +40,7 @@ class Map:
     def draw_cells(self):
         for cell in self.cells:
             color = (0, 200, 0) if cell.type else (200, 0, 0)
-            pg.draw.rect(self.screen, color, cell)
+            pg.draw.rect(self.surface_map, color, cell)
 
     def draw_points(self):
         for point in self.points:
@@ -40,17 +51,17 @@ class Map:
             for x, type in enumerate(MAP[y]):
                 if type == 1:
                     cell = get_cell_by_cord((x, y), self.cells)
-                    point = Point(self.screen, cell.rect.center, 1)
+                    point = Point(self.surface_map, cell.rect.center, 1)
                     cell.point = point
                     self.points.add(point)
                 elif type == 3:
                     cell = get_cell_by_cord((x, y), self.cells)
-                    point = Point(self.screen, cell.rect.center, 3)
+                    point = Point(self.surface_map, cell.rect.center, 3)
                     cell.point = point
                     self.points.add(point)
 
     def update_meal(self):
-        if self.score and self.score < 1800:
+        if self.score and self.score < 600:
             self.draw_meal()
             self.score += 1
         elif self.score == 600:
@@ -64,7 +75,7 @@ class Map:
             self.score = 1
             cell = get_cell_by_cord((14, 17), self.cells)
             type = 1 if len(self.points) == 176 else 2
-            meal = Meal(self.screen, 100, cell.rect.center, type)
+            meal = Meal(self.surface_map, 100, cell.rect.center, type)
             self.meal.add(meal)
             cell.meal = meal
 
