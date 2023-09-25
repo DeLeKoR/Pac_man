@@ -22,19 +22,19 @@ class Game:
 
     def draw_frame(self):
         self.map.draw_map()
-        self.pac_man.draw_pac_man()
-        for enemy in self.enemies:
-            enemy.draw_enemy()
+        # self.pac_man.draw_pac_man()
+        # for enemy in self.enemies:
+        #     enemy.draw_enemy()
         self.info_board.draw_board(self.fps, self.lives, self.level, self.score)
 
     def create_frame(self):
-        if self.map.check_points():
-            self.restart(2)
-            self.level += 1
-        self.pac_man.move()
-        self.pac_man.eat_point(self.score, self.map.numbers)
-        self.pac_man.interaction(self.restart, self.lives)
-        self.update_ghosts()
+        # if self.map.check_points():
+        #     self.restart(2)
+        #     self.level += 1
+        # self.pac_man.move()
+        # self.pac_man.eat_point(self.score, self.map.numbers)
+        # self.pac_man.interaction(self.restart, self.lives)
+        # self.update_ghosts()
         self.map.create_meal()
 
     def create_enemies(self): 

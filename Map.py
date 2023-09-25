@@ -19,9 +19,10 @@ class Map:
         self.score = 0
 
     def draw_map(self):
-        self.surface_map.blit(self.image_map, (0, 0))
-        self.draw_points()
-        self.update_meal()
+        # self.surface_map.fill((10, 10, 10))
+        self.draw_cells()
+        # self.draw_points()
+        # self.update_meal()
         for num in self.numbers:
             if num.alfa <= 0:
                 num.kill()
@@ -29,18 +30,107 @@ class Map:
             num.draw(self.surface_map)
         self.screen.blit(self.surface_map, self.surface_map_rect)
 
+
     def create_cells(self):
         for y in range(len(MAP)):
             for x, type in enumerate(MAP[y]):
                 place_select = check_cell((x, y)) # является ли клетка развилкой лабиринта
-                cell = Cell((x, y), type, place_select)
+                cell = Cell((x, y), type, place_select, self.get_adjacent_cells_cords((x, y), type))
                 self.cells.add(cell)
+
+    def get_adjacent_cells_cords(self, start_cord, type):
+        adjacent_cells_cords = []
+        data_set = [[-1, 0],
+                    [-1, -1],
+                    [0, -1],
+                    [1, -1],
+                    [1, 0],
+                    [1, 1],
+                    [0, 1],
+                    [-1, 1]]
+        for set in data_set:
+            cord = (start_cord[0] + set[0], start_cord[1] + set[1])
+            if check_number_in_gap(cord[0], (0, 28)) and check_number_in_gap(cord[1], (0, 31)):
+                adjacent_cells_cords.append([cord, MAP[cord[1]][cord[0]]])
+            else:
+                adjacent_cells_cords.append(None)
+        return adjacent_cells_cords
 
 
     def draw_cells(self):
         for cell in self.cells:
-            color = (0, 200, 0) if cell.type else (200, 0, 0)
-            pg.draw.rect(self.surface_map, color, cell)
+            if not cell.type:
+                result = []
+                data_set = [[ [0, 1, 2, 6], [6, 7, 2] ],
+                            [ [4, 3, 2, 6], [6, 5, 2] ]
+                            ]
+                offset = 8
+                len_line_const = 10
+                offset_len_line = 6
+                len_line = 0
+                index = 0
+                i = 0
+                set = data_set[index][i]
+                if (cell.adjacent_cells_cords[set[0]] is not None and cell.adjacent_cells_cords[set[0]][1]):
+                    if (cell.adjacent_cells_cords[set[1]] is not None and cell.adjacent_cells_cords[set[2]][1]) or \
+                            (cell.adjacent_cells_cords[set[1]] is not None and not cell.adjacent_cells_cords[set[1]][1] and not cell.adjacent_cells_cords[set[2]][1]):
+                        len_line = len_line_const
+                        if cell.adjacent_cells_cords[set[3]] is not None and not cell.adjacent_cells_cords[set[3]][1] and cell.adjacent_cells_cords[set[2]][1]:
+                            len_line += offset_len_line
+                    result.append((cell.rect.x + offset, cell.rect.y + len_line))
+                    len_line = 0
+                    if (cell.adjacent_cells_cords[6] is not None and cell.adjacent_cells_cords[6][1]) or \
+                        (cell.adjacent_cells_cords[7] is not None and not cell.adjacent_cells_cords[7][1] and not cell.adjacent_cells_cords[6][1]):
+                        len_line = len_line_const
+                        if cell.adjacent_cells_cords[2] is not None and not cell.adjacent_cells_cords[2][1] and cell.adjacent_cells_cords[6][1]:
+                            len_line += offset_len_line
+                    result.append((cell.rect.x + offset, cell.rect.y + cell.rect.height - len_line))
+                    len_line = 0
+                    self.__draw_line(result)
+                if (cell.adjacent_cells_cords[4] is not None and cell.adjacent_cells_cords[4][1]):
+                    if (cell.adjacent_cells_cords[3] is not None and cell.adjacent_cells_cords[2][1]) or \
+                            (not cell.adjacent_cells_cords[3][1] and not cell.adjacent_cells_cords[2][1]):
+                        len_line = len_line_const
+                        if cell.adjacent_cells_cords[6] is not None and not cell.adjacent_cells_cords[6][1] and cell.adjacent_cells_cords[2][1]:
+                            len_line += offset_len_line
+                    result.append((cell.rect.x + cell.rect.width - offset, cell.rect.y + len_line))
+                    len_line = 0
+                    if (cell.adjacent_cells_cords[6] is not None and cell.adjacent_cells_cords[6][1]) or \
+                        (cell.adjacent_cells_cords[5] is not None and not cell.adjacent_cells_cords[5][1] and not cell.adjacent_cells_cords[6][1]):
+                        len_line = len_line_const
+                        if cell.adjacent_cells_cords[2] is not None and not cell.adjacent_cells_cords[2][1] and cell.adjacent_cells_cords[6][1]:
+                            len_line += offset_len_line
+                    result.append((cell.rect.x + cell.rect.width - offset, cell.rect.y + cell.rect.height - len_line))
+                    len_line = 0
+                    self.__draw_line(result)
+                if (cell.adjacent_cells_cords[2] is not None and cell.adjacent_cells_cords[2][1]):
+                    if (cell.adjacent_cells_cords[1] is not None and cell.adjacent_cells_cords[0][1]) or \
+                            (cell.adjacent_cells_cords[1] is not None and not cell.adjacent_cells_cords[1][1] and not cell.adjacent_cells_cords[0][1]):
+                        len_line = len_line_const
+                    result.append((cell.rect.x + len_line, cell.rect.y + offset))
+                    len_line = 0
+                    if (cell.adjacent_cells_cords[4] is not None and cell.adjacent_cells_cords[4][1]) or \
+                        (cell.adjacent_cells_cords[3] is not None and not cell.adjacent_cells_cords[3][1] and not cell.adjacent_cells_cords[4][1]):
+                        len_line = len_line_const
+                    result.append((cell.rect.x + cell.rect.width - len_line, cell.rect.y + offset))
+                    len_line = 0
+                    self.__draw_line(result)
+                if (cell.adjacent_cells_cords[6] is not None and cell.adjacent_cells_cords[6][1]):
+                    if (cell.adjacent_cells_cords[7] is not None and cell.adjacent_cells_cords[0][1]) or \
+                            (cell.adjacent_cells_cords[7] is not None and not cell.adjacent_cells_cords[7][1] and not cell.adjacent_cells_cords[0][1]):
+                        len_line = len_line_const
+                    result.append((cell.rect.x + len_line, cell.rect.y + cell.rect.height - offset))
+                    len_line = 0
+                    if (cell.adjacent_cells_cords[4] is not None and cell.adjacent_cells_cords[4][1]) or \
+                        (cell.adjacent_cells_cords[5] is not None and not cell.adjacent_cells_cords[5][1] and not cell.adjacent_cells_cords[4][1]):
+                        len_line = len_line_const
+                    result.append((cell.rect.x + cell.rect.width - len_line, cell.rect.y + cell.rect.height - offset))
+                    self.__draw_line(result)
+
+    def __draw_line(self, cords):
+        pg.draw.line(self.surface_map, (10, 10, 200), *cords, 3)
+        cords.clear()
+
 
     def draw_points(self):
         for point in self.points:
@@ -91,7 +181,7 @@ class Map:
 
 
 class Cell(pg.sprite.Sprite):
-    def __init__(self, coord, type, place_select):
+    def __init__(self, coord, type, place_select, adjacent_cells_cords: list):
         super().__init__()
         self.cell_size = (PLAY_BOARD_SIZE[0]/len(MAP[0]), PLAY_BOARD_SIZE[1]/len(MAP))
         self.cord = coord
@@ -99,6 +189,9 @@ class Cell(pg.sprite.Sprite):
         self.rect = pg.Rect(self.cord[0] * self.cell_size[0], self.cord[1] * self.cell_size[1], self.cell_size[0], self.cell_size[1])
         self.type = type
         self.place_select = place_select # является ли клетка развилкой лабиринта
+        self.adjacent_cells_cords = adjacent_cells_cords
         self.point = None
         self.meal = None
+
+
 

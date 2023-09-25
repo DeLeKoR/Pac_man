@@ -30,7 +30,7 @@ dir_select_cells = {
     29: (12, 15)
 }
 
-SCREEN_SIZE = (1000, 700)
+SCREEN_SIZE = (1000, 683)
 PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
 BG_COLOR = (5, 5, 20)
 
@@ -76,3 +76,5 @@ MAP = [
 if __name__ == '__main__':
     print(len(MAP), len(MAP[0]))
     print(MAP[27][14])
+
+#pg.draw.circle(self.surface_map, (10, 10, 200), cell.rect.center, cell.rect.height, 2, draw_bottom_right=True)

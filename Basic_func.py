@@ -9,6 +9,8 @@ def get_cell(cords, cells):
 
 def get_cell_by_cord(cords, cells) -> object:
     """Возвращает клетку по её координатам"""
+    if 0 > cords[0] <= 28 or 0 > cords[1] <= 31:
+        return None
     for cell in cells:
         if cell.cord == cords:
             return cell
@@ -20,6 +22,14 @@ def check_cell(cords):
                 return True
     return False
 
+def check_number_in_gap(num, gap:tuple):
+    if gap[0] <= num < gap[1]:
+       return True
+    return False
+
 def sing_number(number) -> int:
     """Возвращает -1, 0, 1 в зависимости от знака числа"""
     return 0 if not number else -1 if number < 0 else 1
+
+
+print()

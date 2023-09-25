@@ -4,7 +4,7 @@ from Basic_func import *
 class Entity(pg.sprite.Sprite):
     def __init__(self, screen, cell, cells):
         pg.sprite.Sprite.__init__(self)
-        self.size = (40, 40)
+        self.size = (34, 34)
         self.screen = screen
         # направление движения
         self.move_now = [0, 0]
