@@ -19,10 +19,10 @@ class Map:
         self.score = 0
 
     def draw_map(self):
-        # self.surface_map.fill((10, 10, 10))
+        self.surface_map.fill((10, 10, 10))
         self.draw_cells()
-        # self.draw_points()
-        # self.update_meal()
+        self.draw_points()
+        self.update_meal()
         for num in self.numbers:
             if num.alfa <= 0:
                 num.kill()
@@ -61,22 +61,18 @@ class Map:
         for cell in self.cells:
             if not cell.type:
                 result = []
-                data_set = [[ [0, 1, 2, 6], [6, 7, 2] ],
-                            [ [4, 3, 2, 6], [6, 5, 2] ]
-                            ]
                 offset = 8
                 len_line_const = 10
                 offset_len_line = 6
                 len_line = 0
-                index = 0
-                i = 0
-                set = data_set[index][i]
-                if (cell.adjacent_cells_cords[set[0]] is not None and cell.adjacent_cells_cords[set[0]][1]):
-                    if (cell.adjacent_cells_cords[set[1]] is not None and cell.adjacent_cells_cords[set[2]][1]) or \
-                            (cell.adjacent_cells_cords[set[1]] is not None and not cell.adjacent_cells_cords[set[1]][1] and not cell.adjacent_cells_cords[set[2]][1]):
+                if (cell.adjacent_cells_cords[0] is not None and cell.adjacent_cells_cords[0][1]):
+                    if (cell.adjacent_cells_cords[1] is not None and cell.adjacent_cells_cords[2][1]) or \
+                            (cell.adjacent_cells_cords[1] is not None and not cell.adjacent_cells_cords[1][1] and not cell.adjacent_cells_cords[2][1]):
                         len_line = len_line_const
-                        if cell.adjacent_cells_cords[set[3]] is not None and not cell.adjacent_cells_cords[set[3]][1] and cell.adjacent_cells_cords[set[2]][1]:
+                        if cell.adjacent_cells_cords[6] is not None and not cell.adjacent_cells_cords[6][1] and cell.adjacent_cells_cords[2][1]:
                             len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + offset, cell.rect.y + len_line))
                     len_line = 0
                     if (cell.adjacent_cells_cords[6] is not None and cell.adjacent_cells_cords[6][1]) or \
@@ -84,15 +80,19 @@ class Map:
                         len_line = len_line_const
                         if cell.adjacent_cells_cords[2] is not None and not cell.adjacent_cells_cords[2][1] and cell.adjacent_cells_cords[6][1]:
                             len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + offset, cell.rect.y + cell.rect.height - len_line))
-                    len_line = 0
                     self.__draw_line(result)
+                    len_line = 0
                 if (cell.adjacent_cells_cords[4] is not None and cell.adjacent_cells_cords[4][1]):
                     if (cell.adjacent_cells_cords[3] is not None and cell.adjacent_cells_cords[2][1]) or \
                             (not cell.adjacent_cells_cords[3][1] and not cell.adjacent_cells_cords[2][1]):
                         len_line = len_line_const
                         if cell.adjacent_cells_cords[6] is not None and not cell.adjacent_cells_cords[6][1] and cell.adjacent_cells_cords[2][1]:
                             len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + cell.rect.width - offset, cell.rect.y + len_line))
                     len_line = 0
                     if (cell.adjacent_cells_cords[6] is not None and cell.adjacent_cells_cords[6][1]) or \
@@ -100,6 +100,8 @@ class Map:
                         len_line = len_line_const
                         if cell.adjacent_cells_cords[2] is not None and not cell.adjacent_cells_cords[2][1] and cell.adjacent_cells_cords[6][1]:
                             len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + cell.rect.width - offset, cell.rect.y + cell.rect.height - len_line))
                     len_line = 0
                     self.__draw_line(result)
@@ -107,11 +109,19 @@ class Map:
                     if (cell.adjacent_cells_cords[1] is not None and cell.adjacent_cells_cords[0][1]) or \
                             (cell.adjacent_cells_cords[1] is not None and not cell.adjacent_cells_cords[1][1] and not cell.adjacent_cells_cords[0][1]):
                         len_line = len_line_const
+                        if (cell.adjacent_cells_cords[4] is not None and not cell.adjacent_cells_cords[4][1] and cell.adjacent_cells_cords[0][1]):
+                            len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + len_line, cell.rect.y + offset))
                     len_line = 0
                     if (cell.adjacent_cells_cords[4] is not None and cell.adjacent_cells_cords[4][1]) or \
                         (cell.adjacent_cells_cords[3] is not None and not cell.adjacent_cells_cords[3][1] and not cell.adjacent_cells_cords[4][1]):
                         len_line = len_line_const
+                        if (cell.adjacent_cells_cords[0] is not None and not cell.adjacent_cells_cords[0][1] and cell.adjacent_cells_cords[4][1]):
+                            len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + cell.rect.width - len_line, cell.rect.y + offset))
                     len_line = 0
                     self.__draw_line(result)
@@ -119,11 +129,19 @@ class Map:
                     if (cell.adjacent_cells_cords[7] is not None and cell.adjacent_cells_cords[0][1]) or \
                             (cell.adjacent_cells_cords[7] is not None and not cell.adjacent_cells_cords[7][1] and not cell.adjacent_cells_cords[0][1]):
                         len_line = len_line_const
+                        if (cell.adjacent_cells_cords[4] is not None and not cell.adjacent_cells_cords[4][1] and cell.adjacent_cells_cords[0][1]):
+                            len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + len_line, cell.rect.y + cell.rect.height - offset))
                     len_line = 0
                     if (cell.adjacent_cells_cords[4] is not None and cell.adjacent_cells_cords[4][1]) or \
                         (cell.adjacent_cells_cords[5] is not None and not cell.adjacent_cells_cords[5][1] and not cell.adjacent_cells_cords[4][1]):
                         len_line = len_line_const
+                        if (cell.adjacent_cells_cords[0] is not None and not cell.adjacent_cells_cords[0][1] and cell.adjacent_cells_cords[4][1]):
+                            len_line += offset_len_line
+                        else:
+                            len_line -= offset_len_line
                     result.append((cell.rect.x + cell.rect.width - len_line, cell.rect.y + cell.rect.height - offset))
                     self.__draw_line(result)
 
