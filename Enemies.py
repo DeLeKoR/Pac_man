@@ -6,16 +6,15 @@ import random
 class Ghost(Entity):
     def __init__(self, cell, cells, screen, image, color_type, retreat_cell, ghost_in_house, pac_man, limit_point):
         super().__init__(screen, cell, cells)
-        image_ghost = pg.image.load(image)
-        image_scared_ghost = pg.image.load(scared_ghost)
-        image_ghost_eyes = pg.image.load(ghost_eyes)
-        self.size = (55, 45)
-        self.base_image = pg.transform.scale(image_ghost, self.size) # основное изображение призрака
-        self.scared_image = pg.transform.scale(image_scared_ghost, self.size)  # изображение испуганного призрака
-        self.eyes_ghost = pg.transform.scale(image_ghost_eyes, self.size) # изображение глаз призрака
+        self.base_image = pg.transform.scale(pg.image.load(image), self.size) # основное изображение призрака
+        self.scared_ghost = pg.transform.scale(pg.image.load(scared_ghost), self.size)  # изображение испуганного призрака
+        self.white_ghost = pg.transform.scale(pg.image.load(white_ghost), self.size)  # изображение белого от испуга призрака
+        self.ghost_eyes = pg.transform.scale(pg.image.load(ghost_eyes), self.size) # изображение глаз призрака
+        self.list_scare_imgs = [self.scared_ghost, self.white_ghost]   # изображения испуганного призрака
+        self.start_time_img = 0    # время, когда у спрайта меняется изображение
+        self.image = self.base_image  # текущее изибражение
         self.activity = False
         self.point_limit = limit_point    # число, которое должен набрать игрок, чтобы запустить призраков
-        self.image = self.base_image    # текущее изибражение
         self.start_cords = cell.cord    # начальное положение призрака
         self.ghost_in_house = ghost_in_house    # равен True, если призрак в доме
         self.color_type = color_type    # тип цвета призрака
@@ -25,6 +24,8 @@ class Ghost(Entity):
         self.mode_now = "run"
         self.mode_first = "attack"
         self.times_modes = [7, 20, 7, 20, 5, 20, 5]
+        self.start_time_mode = 0
+        self.time_mode_scare = 5 # время действия режима испуга
         self.index_mode = 0
         self.kill_ghost = False
 
@@ -37,13 +38,13 @@ class Ghost(Entity):
             self.target = self.retreat_cell
             self.ghost_in_house = False
             self.start_cords = start_points[0]
+            self.start_time_mode = pg.time.get_ticks()
         else:
             self.target = start_points[0]
             self.speed = 1
             self.create_future_move(self.target, self.cell.cord)
         self.update_move()
         self.move()
-        self.start_time = pg.time.get_ticks()
 
     def draw_enemy(self):
         self.draw(self.image)
@@ -63,7 +64,7 @@ class Ghost(Entity):
     def check_time(self):
         """Проверка времени действия текущего режима"""
         end_time = pg.time.get_ticks()
-        different = (end_time - self.start_time) / 1000
+        different = (end_time - self.start_time_mode) / 1000
 
         if self.mode_now != "scare" and self.index_mode < len(self.times_modes):
             time_mode = self.times_modes[self.index_mode]
@@ -78,32 +79,35 @@ class Ghost(Entity):
     def change_mode(self):
         """Изменяет режим у призрака"""
         if self.mode_now == "scare":
-            self.mode_now, self.mode_first = self.mode_first, self.mode_now
             self.scare_mode_off()
-        else:
+
+        elif self.mode_now != "scare" and not self.ghost_in_house:
             self.mode_now, self.mode_first = self.mode_first, self.mode_now
             self.move_future = [self.move_now[0] * (-1), self.move_now[1] * (-1)]
 
         if self.mode_now == "run":
             self.target = self.retreat_cell
 
-        self.start_time = pg.time.get_ticks()
+        self.start_time_mode = pg.time.get_ticks()
 
     def scare_mode_on(self):
         """Режим испуга призрака"""
         if self.mode_now != "scare":
-            self.image = self.scared_image
+            self.image = self.scared_ghost
             self.mode_first = self.mode_now
             self.mode_now = "scare"
-            self.speed = 1.5
+            self.speed = 1.7
             self.update_move()
             self.move_future = [self.move_now[0] * (-1), self.move_now[1] * (-1)]
-        self.start_time = pg.time.get_ticks()
+
+        self.start_time_mode = pg.time.get_ticks()
 
     def scare_mode_off(self):
+        self.mode_now, self.mode_first = self.mode_first, self.mode_now
         self.image = self.base_image
-        self.speed = 2.5
-        self.update_move()
+        if not self.ghost_in_house:
+            self.speed = 2.5
+            self.update_move()
         if self.mode_now == "run":
             self.mode_first = "attack"
         else:
@@ -111,7 +115,7 @@ class Ghost(Entity):
 
     def kill_mode(self):
         """Режим, который срабатывает, когда призрака съедает пак ман"""
-        self.image = self.eyes_ghost # меняем изображение спрайта призрака
+        self.image = self.ghost_eyes # меняем изображение спрайта призрака
         self.target = start_points[1]
         self.kill_ghost = True
         self.speed = 3.5
@@ -171,8 +175,8 @@ class Ghost(Entity):
             self.target = start_points[2]
             self.move_future = [-self.speed, 0]
         elif self.future_cell.cord == start_points[2]:
+            self.change_mode()
             self.ghost_in_house = False
-            self.target = self.retreat_cell
             self.speed = 2.5
             self.update_move()
             self.move_future = [-self.speed, 0]
@@ -190,6 +194,23 @@ class Ghost(Entity):
             self.update_move()
             self.create_future_move(self.target, self.cell.cord)
 
+    # ДВИЖЕНИЕ ПРИЗРАКА В ТУНЕЛЕ
+
+    def ghost_in_tunnel(self):
+        """Изменяет скорость у призрака, если он в тунеле"""
+        if self.future_cell is not None:
+            if self.future_cell.type == 2:
+                self.speed = 1.4
+            elif self.future_cell.type == 1:
+                if self.mode_now != "scare":
+                    self.speed = 2.5
+                else:
+                    self.speed = 1.7
+        else:
+            self.speed = 1.4
+        self.update_move()
+        self.move_future = [sing_number(self.move_future[0]) * self.speed, sing_number(self.move_future[1]) * self.speed]
+
     # ФУНКЦИИ, ИЗМЕНЯЮЩИЕ НАПРАВЛЕНИЕ У ПРИЗРАКА, КОГДА ОН ДВИЖИТСЯ ПО ЛАБИРИНТУ
 
     def check_future_cell(self):
@@ -206,17 +227,15 @@ class Ghost(Entity):
 
     def turn_other_direction(self):
         "Изменяет направление призрака, если впереди него стена"
-        try:
+        if self.future_cell is not None:
             next_cell = self.get_next_cell()
-            if not next_cell.type:
+            if next_cell is not None and not next_cell.type:
                 if not self.kill_ghost and self.check_time():
                     self.change_mode()
                     return
                 side_cells_cord = self.get_side_cells() # получаем клетки, расположенные по бокам от целевой
-                cells = self.filter_cells(side_cells_cord) # получаем клеки, по которым призрак сможет идти 
+                cells = self.filter_cells(side_cells_cord) # получаем клеки, по которым призрак сможет идти
                 self.create_future_move(cells[0].cord, self.future_cell.cord)
-        except AttributeError:
-            pass
 
     def select_direction(self):
         """Выбирает в какую сторону лабиринта пойти призраку"""

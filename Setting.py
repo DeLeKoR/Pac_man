@@ -9,7 +9,9 @@ yellow_ghost = os.path.join(images_folder, "jellow_ghost.png")
 pink_ghost = os.path.join(images_folder, "pink_ghost.png")
 red_ghost = os.path.join(images_folder, "red_ghost.png")
 scared_ghost = os.path.join(images_folder, "scared_ghost.png")
+white_ghost = os.path.join(images_folder, "white_ghost.png")
 ghost_eyes = os.path.join(images_folder, "ghost_eyes.png")
+
 
 # настройка призраков
 images_ghosts = (red_ghost, blue_ghost, pink_ghost, yellow_ghost)
