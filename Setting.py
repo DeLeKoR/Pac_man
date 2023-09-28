@@ -30,7 +30,7 @@ dir_select_cells = {
     29: (12, 15)
 }
 
-SCREEN_SIZE = (1000, 683)
+SCREEN_SIZE = (1000, 775)
 PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
 BG_COLOR = (5, 5, 20)
 

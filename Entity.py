@@ -4,7 +4,7 @@ from Basic_func import *
 class Entity(pg.sprite.Sprite):
     def __init__(self, screen, cell, cells):
         pg.sprite.Sprite.__init__(self)
-        self.size = (34, 34)
+        self.size = (40, 40)
         self.screen = screen
         # направление движения
         self.move_now = [0, 0]
@@ -49,7 +49,7 @@ class Entity(pg.sprite.Sprite):
             self.x += self.move_now[0]
             self.centerx += self.move_now[0]
             self.rect.x = self.x
-            if int(-self.cell.cell_size[0]/2)-self.speed/2 <=self.rect.center[0] <= int(-self.cell.cell_size[0]/2)+self.speed/2 or (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])-self.speed/2 <= self.rect.center[0] <= (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])+self.speed/2:
+            if int(-self.cell.size[0] / 2)-self.speed/2 <=self.rect.center[0] <= int(-self.cell.size[0] / 2)+self.speed/2 or (int(self.cell.size[0] / 2) + PLAY_BOARD_SIZE[0])-self.speed/2 <= self.rect.center[0] <= (int(self.cell.size[0] / 2) + PLAY_BOARD_SIZE[0])+self.speed/2:
                 if self.rect.centerx < 0:
                     self.rect.center = get_cell_by_cord((self.cell.cord[0]+27, self.cell.cord[1]), self.cells).rect.center
                 else:

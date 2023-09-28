@@ -7,8 +7,7 @@ class Ghost(Entity):
     def __init__(self, cell, cells, screen, image, color_type, retreat_cell, ghost_in_house, pac_man):
         super().__init__(screen, cell, cells)
         picture_ghost = pg.image.load(image) 
-        picture_scared_ghost = pg.image.load(scared_ghost) 
-        self.size = (50, 40)
+        picture_scared_ghost = pg.image.load(scared_ghost)
         self.base_image = pg.transform.scale(picture_ghost, self.size) # основное изображение призрака
         self.scared_image = pg.transform.scale(picture_scared_ghost, self.size)  # изображение испуганного призрака
         self.image = self.base_image # текущее изибражение
