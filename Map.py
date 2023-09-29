@@ -149,30 +149,49 @@ class Cell(pg.sprite.Sprite):
         self.__draw_bottom_line()
 
     def __draw_left_line(self):
-
+        y = 0
+        ad = False
         if self.adjacent_cells_cords[0] is not None and self.adjacent_cells_cords[0][1]:
             # отрисовка левой вертикальной линии
             if self.adjacent_cells_cords[0][1] == 5 and self.adjacent_cells_cords[4][1]:
                 self.offset = 0
             # начало линии верх
-            if self.__check_wall_edge(1, 2):
+            if not self.adjacent_cells_cords[1][1] and not self.adjacent_cells_cords[2][1]:
+                self.len_line = self.len_line_const
+                if self.offset == 0:
+                    self.__draw_top_right_semicircle(wall=True, shirt_wall=True)
+                else:
+                    self.__draw_top_right_semicircle(wall=True)
+                ad = True
+            if self.adjacent_cells_cords[2][1] or ad:
                 self.len_line = self.len_line_const
                 if self.adjacent_cells_cords[0][1] == 5 and not self.adjacent_cells_cords[4][1]:
                     self.len_line = 6
                 if self.adjacent_cells_cords[2][1]:
                     self.len_line += self.offset
+                    self.__draw_top_left_semicircle()
                 else:
                     self.len_line -= self.offset
             self.result.append((self.rect.x + self.offset, self.rect.y + self.len_line))
             self.len_line = 0
+            ad = False
 
             # конец линии низ
-            if self.__check_wall_edge(7, 6):
+            if not self.adjacent_cells_cords[7][1] and not self.adjacent_cells_cords[6][1]:
+                self.len_line = self.len_line_const
+                if self.offset == 0:
+                    self.__draw_bottom_right_semicircle(shirt_wall=True)
+                else:
+                    self.__draw_bottom_right_semicircle(wall=True)
+                ad = True
+            if self.adjacent_cells_cords[6][1] or ad:
                 self.len_line = self.len_line_const
                 if self.adjacent_cells_cords[0][1] == 5 and not self.adjacent_cells_cords[4][1]:
                     self.len_line = -6
+                    y += 6
                 if self.adjacent_cells_cords[6][1]:
                     self.len_line += self.offset
+                    self.__draw_bottom_left_semicircle(y)
                 else:
                     self.len_line -= self.offset
 
@@ -182,33 +201,49 @@ class Cell(pg.sprite.Sprite):
             self.__draw_line(self.result)
 
     def __draw_right_line(self):
-
+        y = 0
+        ad = False
         if self.adjacent_cells_cords[4] is not None and self.adjacent_cells_cords[4][1]:
             # отрисовка правой вертикальной линии
             if self.adjacent_cells_cords[4][1] == 5 and self.adjacent_cells_cords[0][1]:
                 self.offset = 0
             # начало линии
-            if (self.adjacent_cells_cords[3] is not None and self.adjacent_cells_cords[2][1]) or \
-                    (not self.adjacent_cells_cords[3][1] and not self.adjacent_cells_cords[2][1]):
+            if not self.adjacent_cells_cords[3][1] and not self.adjacent_cells_cords[2][1]:
+                self.len_line = self.len_line_const
+                if self.offset == 0:
+                    self.__draw_top_left_semicircle(shirt_wall=True)
+                else:
+                    self.__draw_top_left_semicircle(wall=True)
+                ad = True
+            if self.adjacent_cells_cords[2][1] or ad:
                 self.len_line = self.len_line_const
                 if self.adjacent_cells_cords[4][1] == 5 and not self.adjacent_cells_cords[0][1]:
                     self.len_line = 6
                 if self.adjacent_cells_cords[2][1]:
                     self.len_line += self.offset
+                    self.__draw_top_right_semicircle()
                 else:
                     self.len_line -= self.offset
             self.result.append((self.rect.x + self.rect.width - self.offset, self.rect.y + self.len_line))
             self.len_line = 0
+            ad = False
 
             # конец линии
-            if (self.adjacent_cells_cords[6] is not None and self.adjacent_cells_cords[6][1]) or \
-                    (self.adjacent_cells_cords[5] is not None and not self.adjacent_cells_cords[5][1] and not
-                    self.adjacent_cells_cords[6][1]):
+            if not self.adjacent_cells_cords[5][1] and not self.adjacent_cells_cords[6][1]:
+                self.len_line = self.len_line_const
+                if self.offset == 0:
+                    self.__draw_bottom_left_semicircle(shirt_wall=True)
+                else:
+                    self.__draw_bottom_left_semicircle(wall=True)
+                ad = True
+            if self.adjacent_cells_cords[6][1] or ad:
                 self.len_line = self.len_line_const
                 if self.adjacent_cells_cords[4][1] == 5 and not self.adjacent_cells_cords[0][1]:
                     self.len_line = -6
+                    y += 6
                 if self.adjacent_cells_cords[6][1]:
                     self.len_line += self.offset
+                    self.__draw_bottom_right_semicircle(y)
                 else:
                     self.len_line -= self.offset
             self.result.append((self.rect.x + self.rect.width - self.offset, self.rect.y + self.rect.height - self.len_line))
@@ -286,17 +321,55 @@ class Cell(pg.sprite.Sprite):
             self.offset = self.const_offset
             self.__draw_line(self.result)
 
+
     def __draw_line(self, cords):
-        pg.draw.line(self.surface_map, (10, 10, 200), *cords, 3)
+        pg.draw.line(self.surface_map, WALL_COLOR, *cords, 3)
         cords.clear()
 
+    def __draw_top_left_semicircle(self, wall=False, shirt_wall=False):
+        direction = [0, 1, 0, 0]
+        if shirt_wall:
+            center = self.rect.centerx + self.len_line*2+6, self.rect.centery-self.len_line+5
+        elif not wall:
+            center = self.rect.centerx+self.len_line/2-1, self.rect.centery+self.len_line/2
+        else:
+            center = self.rect.centerx + self.len_line+2, self.rect.centery-self.len_line*2+2
+        radius = 10
+        pg.draw.circle(self.surface_map, WALL_COLOR, center, radius, 3, *direction)
 
-    def __check_wall_edge(self, index_1, index_2):
-        if self.adjacent_cells_cords[index_1] is not None and self.adjacent_cells_cords[index_2] is not None:
-            if (self.adjacent_cells_cords[index_2][1]) or \
-                    (not self.adjacent_cells_cords[index_1][1] and not self.adjacent_cells_cords[index_2][1]):
-                return True
-        return False
+    def __draw_top_right_semicircle(self, wall=False, shirt_wall=False):
+        direction = [1, 0, 0, 0]
+        if shirt_wall:
+            center = self.rect.centerx - self.len_line*2-5, self.rect.centery - self.len_line+5
+        elif not wall:
+            center = self.rect.centerx-self.len_line/2+2, self.rect.centery+self.len_line/2
+        else:
+            center = self.rect.centerx - self.len_line, self.rect.centery - self.len_line*2+2
+        radius = 10
+        pg.draw.circle(self.surface_map, WALL_COLOR, center, radius, 3, *direction)
+
+    def __draw_bottom_left_semicircle(self, xy=0, wall=False, shirt_wall=False):
+        direction = [0, 0, 1, 0]
+        if shirt_wall:
+            center = self.rect.centerx+self.len_line*3-2, self.rect.centery+self.len_line-3
+        elif not wall:
+            center = self.rect.centerx+self.len_line/2+xy, self.rect.centery-self.len_line/2+2+xy
+        else:
+            center = self.rect.centerx+self.len_line*2-6, self.rect.centery+self.len_line*2
+        radius = 10
+        pg.draw.circle(self.surface_map, WALL_COLOR, center, radius, 3, *direction)
+
+    def __draw_bottom_right_semicircle(self, xy=0, wall=False, shirt_wall=False):
+        direction = [0, 0, 0, 1]
+        if shirt_wall:
+            center = self.rect.centerx - self.len_line*2.5, self.rect.centery + self.len_line/2
+        elif not wall:
+            center = self.rect.centerx - self.len_line / 2 - xy + 2, self.rect.centery - self.len_line / 2 + 2 + xy
+        else:
+            center = self.rect.centerx - self.len_line, self.rect.centery + self.len_line*2
+        radius = 10
+        pg.draw.circle(self.surface_map, WALL_COLOR, center, radius, 3, *direction)
+
 
 
 

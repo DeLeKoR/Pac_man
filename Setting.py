@@ -36,6 +36,7 @@ dir_select_cells = {
 SCREEN_SIZE = (1000, 775)
 PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
 BG_COLOR = (5, 5, 20)
+WALL_COLOR = (10, 10, 240)
 
 FPS = 60
 
