@@ -1,6 +1,7 @@
 from Setting import *
 from Basic_func import *
 from Point import *
+from Text_points import *
 
 
 class Map:
@@ -22,12 +23,18 @@ class Map:
         self.surface_map.blit(self.image_map, (0, 0))
         self.draw_points()
         self.update_meal()
+        self.draw_nums()
+        self.screen.blit(self.surface_map, self.surface_map_rect)
+
+    def draw_nums(self):
         for num in self.numbers:
             if num.alfa <= 0:
                 num.kill()
                 continue
             num.draw(self.surface_map)
-        self.screen.blit(self.surface_map, self.surface_map_rect)
+
+    def add_number(self, cell, value=None):
+        self.numbers.add(Number(cell, value))
 
     def create_cells(self):
         for y in range(len(MAP)):

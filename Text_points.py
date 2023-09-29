@@ -1,14 +1,17 @@
 from Setting import *
 
 class Number(pg.sprite.Sprite):
-    def __init__(self, cell):
+    def __init__(self, cell, value=None):
         super().__init__()
         self.color = (153, 217, 140)
         font = pg.font.Font("Fonts/pixel-cyr-normal.ttf", 22)
-        if cell.point is not None:
-            self.value = cell.point.value
-        elif cell.meal is not None:
-            self.value = cell.meal.value
+        if value is None:
+            if cell.point is not None:
+                self.value = cell.point.value
+            elif cell.meal is not None:
+                self.value = cell.meal.value
+        else:
+            self.value = value
         self.text = font.render(f'{self.value}', True, self.color)
         self.rect = self.text.get_rect()
         self.rect.center = cell.rect.center

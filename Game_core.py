@@ -33,7 +33,7 @@ class Game:
             self.restart(2)
             self.level += 1
         self.pac_man.move()
-        self.pac_man.eat_point(self.score, self.map.numbers)
+        self.pac_man.eat_point(self.score, self.map.add_number)
         self.update_ghosts()
         self.map.create_meal()
 

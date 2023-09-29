@@ -14,13 +14,13 @@ class Pac_man(Entity):
     def draw_pac_man(self):
         self.draw(self.pac_man)
 
-    def eat_point(self, score, numbers):
+    def eat_point(self, score, number):
         cell = get_cell(self.rect.center, self.cells)
         if (cell is not None and ((cell.rect.centerx - self.speed / 2 <= self.centerx <= cell.rect.centerx + self.speed / 2)
                     and (cell.rect.centery - self.speed / 2 <= self.centery <= cell.rect.centery + self.speed / 2))):
 
             if cell.point is not None:
-                numbers.add(Number(cell))
+                number(cell)
                 score[0] += cell.point.value
                 if cell.point.type == 3:
                     for enemy in self.enemies:
@@ -35,7 +35,7 @@ class Pac_man(Entity):
                 self.update_move()
 
             if cell.meal is not None:
-                numbers.add(Number(cell))
+                number(cell)
                 cell.meal.kill()
                 score[0] += cell.meal.value
                 cell.meal = None
