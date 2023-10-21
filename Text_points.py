@@ -1,21 +1,21 @@
 from Setting import *
 
 class Number(pg.sprite.Sprite):
-    def __init__(self, obj):
+    def __init__(self, cell, value=None):
         super().__init__()
         self.color = (153, 217, 140)
         font = pg.font.Font("Fonts/pixel-cyr-normal.ttf", 22)
-        if isinstance(obj, object):
-            if obj.point is not None:
-                self.value = obj.point.value
-            elif obj.meal is not None:
-                self.value = obj.meal.value
-        elif isinstance(obj, int):
-            self.value = obj
+        if value is None:
+            if cell.point is not None:
+                self.value = cell.point.value
+            elif cell.meal is not None:
+                self.value = cell.meal.value
+        else:
+            self.value = value
         self.text = font.render(f'{self.value}', True, self.color)
         self.rect = self.text.get_rect()
-        self.rect.center = obj.rect.center
-        self.cord = (obj.rect.centerx - self.rect.width / 2, obj.rect.centery - self.rect.height / 2)
+        self.rect.center = cell.rect.center
+        self.cord = (cell.rect.centerx - self.rect.width/2, cell.rect.centery - self.rect.height/2)
         self.alfa = 254
         self.offset = 0
 

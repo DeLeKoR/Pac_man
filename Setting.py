@@ -9,20 +9,23 @@ yellow_ghost = os.path.join(images_folder, "jellow_ghost.png")
 pink_ghost = os.path.join(images_folder, "pink_ghost.png")
 red_ghost = os.path.join(images_folder, "red_ghost.png")
 scared_ghost = os.path.join(images_folder, "scared_ghost.png")
+white_ghost = os.path.join(images_folder, "white_ghost.png")
+ghost_eyes = os.path.join(images_folder, "ghost_eyes.png")
+
 
 # настройка призраков
 images_ghosts = (red_ghost, blue_ghost, pink_ghost, yellow_ghost)
 cords_ghosts = ((14, 11), (12, 14), (14, 14), (16, 14)) # координаты клеток, на которых сторят призраки в начале игры
 ghosts_colors = ("red", "blue", "pink", "yellow") 
-act_ghosts = False
-start_points = [(14, 14), (14, 11)] # целевые клетки призраков в доме
+start_points = [(14, 14), (14, 11), (13, 11)] # целевые клетки призраков в доме
 retreat_cords = ((26, 1), (26, 29), (1, 1), (1, 29)) # координаты клеток отступления
-dir_select_cells = {
+points_limit = (0, 30, 0, 60) # очки, которые должен набрать игрок, чтобы запустить призраков
+dir_select_cells = { 
     1: (6, 21),
     5: (1, 6, 9, 12, 15, 18, 21, 26),
     8: (6, 21),
     11: (12, 15),
-    14: (6, 9, 18, 21),
+    14: (6, 9, 18, 21),     # координаты клеток, где призраку нужно сделать выбор в какую сторону лабиринта пойти
     17: (9, 18),
     20: (6, 9, 18, 21),
     23: (6, 9, 12, 15, 18, 21),
