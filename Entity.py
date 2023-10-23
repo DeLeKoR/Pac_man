@@ -21,8 +21,10 @@ class Entity(pg.sprite.Sprite):
         # координаты (по умолчанию совмещают центр объекта с центром клетки)
         self.rect = pg.Rect(0, 0, *self.size)
         self.rect.center = self.cell.rect.center
+        self.touch_rect = pg.Rect(0, 0, self.size[0]/2, self.size[1]/2)
         self.x = self.rect.x
         self.y = self.rect.y
+        self.touch_rect.center = self.rect.center
         self.centerx = self.rect.centerx
         self.centery = self.rect.centery
         self.textures = []
@@ -38,6 +40,7 @@ class Entity(pg.sprite.Sprite):
                     and (cell.rect.centery - self.speed / 2 <= self.centery <= cell.rect.centery + self.speed / 2)):
                 self.cell = cell
                 self.rect.center = self.cell.rect.center
+                self.touch_rect.center = self.rect.center
                 self.x, self.y = self.rect.x, self.rect.y
                 self.centerx, self.centery = self.rect.center
                 # определение клетки в стороне будущего движения
@@ -63,6 +66,7 @@ class Entity(pg.sprite.Sprite):
                 else:
                     self.rect.center = get_cell_by_cord((self.cell.cord[0] - 27, self.cell.cord[1]),self.cells).rect.center
                 self.x = self.rect.x
+                self.touch_rect.center = self.rect.center
                 self.centerx = self.rect.centerx
                 self.textures.pop(1)
         if self.future_cell is not None and self.next_cell is not None and self.future_cell.type and self.next_cell.type and self.moving:
@@ -72,6 +76,7 @@ class Entity(pg.sprite.Sprite):
             self.centery += self.move_now[1]
             self.centerx += self.move_now[0]
             self.rect.x, self.rect.y = self.x, self.y
+            self.touch_rect.center = self.rect.center
 
 
     def draw(self, object):

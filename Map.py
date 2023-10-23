@@ -69,10 +69,6 @@ class Map:
             if not cell.type:
                 cell.draw_cell()
 
-    def __draw_line(self, cords):
-        pg.draw.line(self.surface_map, (10, 10, 200), *cords, 3)
-        cords.clear()
-
 
     def draw_points(self):
         for point in self.points:

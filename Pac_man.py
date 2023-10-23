@@ -42,10 +42,10 @@ class Pac_man(Entity):
 
     def interaction(self, restart, lives, enemy):
         """Определение соприкосновения пакмена с призраком"""
-        if self.cell.cord == enemy.cell.cord:
+        if self.touch_rect.colliderect(enemy.touch_rect):
             if enemy.mode_now == 'scare':
                 enemy.kill_mode()
-            elif enemy.mode_now == "attack":
+            else:
                 if lives[0]:
                     restart(0)
                     lives[0] -= 1
