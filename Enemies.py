@@ -13,6 +13,7 @@ class Ghost(Entity):
         self.list_scare_imgs = [self.scared_ghost, self.white_ghost]   # изображения испуганного призрака
         self.start_time_img = 0    # время, когда у спрайта меняется изображение
         self.image = self.base_image  # текущее изибражение
+        self.value = 200  # ценность призрака
         self.activity = False
         self.point_limit = limit_point    # число, которое должен набрать игрок, чтобы запустить призраков
         self.start_cords = cell.cord    # начальное положение призрака

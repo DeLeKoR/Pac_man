@@ -34,8 +34,8 @@ class Map:
                 continue
             num.draw(self.surface_map)
 
-    def add_number(self, cell, value=None):
-        self.numbers.add(Number(cell, value))
+    def add_number(self, cell, value=None, size=22):
+        self.numbers.add(Number(cell, value, size))
 
 
     def create_cells(self):
@@ -96,6 +96,9 @@ class Map:
             self.score = 0
             for meal in self.meal:
                 meal.kill()
+                for cell in self.cells:
+                    if cell.meal is not None:
+                        cell.meal = None
 
 
     def create_meal(self):

@@ -4,9 +4,10 @@ from Text_points import *
 from Entity import *
 
 class Pac_man(Entity):
-    def __init__(self, cell, screen, cells, enemies):
+    def __init__(self, cell, screen, cells, enemies, stop_entity):
         super().__init__(screen, cell, cells)
         picture = pg.image.load(PAC_MAN_IMG_PASS)
+        self.stop_entity = stop_entity
         self.pac_man = pg.transform.scale(picture, self.size)
         self.enemies = enemies
         self.loc_speed = self.speed
@@ -35,15 +36,19 @@ class Pac_man(Entity):
                 self.update_move()
 
             if cell.meal is not None:
-                number(cell)
+                number(cell, size=28)
                 cell.meal.kill()
                 score[0] += cell.meal.value
                 cell.meal = None
 
-    def interaction(self, restart, lives, enemy):
+    def interaction(self, restart, lives, enemy, score, number):
         """Определение соприкосновения пакмена с призраком"""
         if self.touch_rect.colliderect(enemy.touch_rect):
             if enemy.mode_now == 'scare':
+                if not enemy.kill_ghost:
+                    self.stop_entity()
+                    score[0] += enemy.value
+                    number(enemy.cell, enemy.value, 30)
                 enemy.kill_mode()
             else:
                 if lives[0]:

@@ -1,10 +1,10 @@
 from Setting import *
 
 class Number(pg.sprite.Sprite):
-    def __init__(self, cell, value=None):
+    def __init__(self, cell, value=None, size=22):
         super().__init__()
         self.color = (153, 217, 140)
-        font = pg.font.Font("Fonts/pixel-cyr-normal.ttf", 22)
+        font = pg.font.Font("Fonts/pixel-cyr-normal.ttf", size)
         if value is None:
             if cell.point is not None:
                 self.value = cell.point.value
