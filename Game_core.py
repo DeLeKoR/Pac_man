@@ -4,6 +4,7 @@ from Enemies import *
 from Pac_man import *
 from Basic_func import *
 from Information_board import *
+import os
 
 class Game:
     def __init__(self, screen, fps: int = 0):
@@ -22,6 +23,8 @@ class Game:
         self.first_points = len(self.map.points) # общее кол-во точек на карте
         self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies, self.stop_entity)
         self.create_enemies()
+        if not os.path.isfile('max_score.txt'):
+            self.save_max_score()
         self.info_board = Information_board(self.screen, self.read_max_score)
 
     def draw_frame(self):
