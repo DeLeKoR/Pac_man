@@ -39,11 +39,11 @@ class Ghost(Entity):
             self.target = self.retreat_cell
             self.ghost_in_house = False
             self.start_cords = start_points[0]
-            self.start_time_mode = pg.time.get_ticks()
         else:
             self.target = start_points[0]
             self.speed = 1
             self.create_future_move(self.target, self.cell.cord)
+        self.start_time_mode = pg.time.get_ticks()
         self.update_move()
         self.move()
 
