@@ -304,7 +304,7 @@ class Ghost(Entity):
     def update_image(self):
         """Меняет изображение у спрайта"""
         time_now = pg.time.get_ticks() / 1000
-        if time_now - self.start_time_img >= 0.4:
+        if time_now - self.start_time_img >= 0.1:
             self.image = self.group_images[self.index_img]
             self.start_time_img = time_now
 
@@ -323,7 +323,7 @@ class Ghost(Entity):
             return 1
         elif self.mode_now == "scare" and not self.kill_ghost:
             action_time_mode = (pg.time.get_ticks() - self.start_time_mode) / 1000  # находим время действия режима
-            if (self.time_mode_scare - action_time_mode) <= 4:
+            if (self.time_mode_scare - action_time_mode) <= 3:
                 return 3
             else:
                 return 1
