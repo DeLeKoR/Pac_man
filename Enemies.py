@@ -4,16 +4,11 @@ from Basic_func import *
 import random
 
 class Ghost(Entity):
-    def __init__(self, cell, cells, screen, image, group_images, all_images, color_type, retreat_cell, ghost_in_house, pac_man, limit_point, time_limit):
+    def __init__(self, cell, cells, screen, group_images, all_images, color_type, retreat_cell, ghost_in_house, pac_man, limit_point, time_limit):
         super().__init__(screen, cell, cells)
-        self.base_image = pg.transform.scale(pg.image.load(image), self.size) # основное изображение призрака
-        self.scared_ghost = pg.transform.scale(pg.image.load(scared_ghost), self.size)  # изображение испуганного призрака
-        self.white_ghost = pg.transform.scale(pg.image.load(white_ghost), self.size)  # изображение белого от испуга призрака
-        self.ghost_eyes = pg.transform.scale(pg.image.load(ghost_eyes), self.size) # изображение глаз призрака
-        self.list_scare_imgs = [self.scared_ghost, self.white_ghost]   # изображения испуганного призрака
-        self.start_time_img = 0    # время, когда у спрайта изменилось изображение
-        self.image = self.base_image # текущее изображение у спрайта
         self.group_images = group_images # отдельная группа изображений призрака
+        self.image = self.group_images[0] # текущее изображение у спрайта
+        self.start_time_img = 0    # время, когда у спрайта изменилось изображение
         self.index_img = 0 # индекс текущего изображения в группе
         self.all_images = all_images # все ихображения для призрака
         self.activity = False
@@ -29,7 +24,7 @@ class Ghost(Entity):
         self.mode_first = "attack"
         self.times_modes = [7, 20, 7, 20, 5, 20, 5]
         self.start_time_mode = 0
-        self.time_mode_scare = 5 # время действия режима испуга
+        self.time_mode_scare = 6 # время действия режима испуга
         self.index_mode = 0
         self.kill_ghost = False
 
@@ -39,7 +34,7 @@ class Ghost(Entity):
             self.speed = 2.5
             self.move_future = [-self.speed, 0]
             self.move_now = [-self.speed, 0]
-            self.group_images = get_images_list(self.move_future, self.all_images)
+            self.update_images_group()
             self.target = self.retreat_cell
             self.ghost_in_house = False
             self.start_cords = start_points[0]
@@ -89,6 +84,7 @@ class Ghost(Entity):
         elif self.mode_now != "scare" and not self.ghost_in_house:
             self.mode_now, self.mode_first = self.mode_first, self.mode_now
             self.move_future = [self.move_now[0] * (-1), self.move_now[1] * (-1)]
+            self.update_images_group()
 
         if self.mode_now == "run":
             self.target = self.retreat_cell
@@ -103,13 +99,12 @@ class Ghost(Entity):
             self.speed = 1.7
             self.update_move()
             self.move_future = [self.move_now[0] * (-1), self.move_now[1] * (-1)]
+            self.update_images_group()
 
-        self.image = self.scared_ghost
         self.start_time_mode = pg.time.get_ticks()
 
     def scare_mode_off(self):
         self.mode_now, self.mode_first = self.mode_first, self.mode_now
-        self.image = self.base_image
         if not self.ghost_in_house:
             self.speed = 2.5
             self.update_move()
@@ -120,13 +115,13 @@ class Ghost(Entity):
 
     def kill_mode(self):
         """Режим, который срабатывает, когда призрака съедает пак ман"""
-        self.image = self.ghost_eyes # меняем изображение спрайта призрака
         self.target = start_points[1]
         self.kill_ghost = True
         self.speed = 3.5
         self.update_move()
         self.move_future = [sing_number(self.move_future[0]) * self.speed, sing_number(self.move_future[1]) * self.speed]
-    
+        self.update_images_group()
+
     # ОПРЕДЕЛЕНИЕ ЦЕЛЕВОЙ КЛЕТКИ У ПРИЗРАКОВ В РЕЖИМЕ АТАКИ
     
     def count_target_ghosts(self, cord_red):
@@ -177,15 +172,17 @@ class Ghost(Entity):
         if self.future_cell.cord == start_points[0]:
             self.target = start_points[1]
             self.move_future = [0, -self.speed]
+            self.update_images_group()
         elif self.future_cell.cord == start_points[1]:
             self.target = start_points[2]
             self.move_future = [-self.speed, 0]
+            self.update_images_group()
         elif self.future_cell.cord == start_points[2]:
-            self.change_mode()
             self.ghost_in_house = False
             self.speed = 2.5
             self.update_move()
             self.move_future = [-self.speed, 0]
+            self.update_images_group()
 
     def get_into(self):
         "Заставляет призраков войти в дом"
@@ -194,9 +191,9 @@ class Ghost(Entity):
             self.create_future_move(self.target, self.future_cell.cord)
         elif self.future_cell.cord == self.start_cords:
             self.kill_ghost = False
-            self.image = self.base_image
             self.target = start_points[0]
             self.speed = 1
+            self.change_mode()
             self.update_move()
             self.create_future_move(self.target, self.cell.cord)
 
@@ -216,6 +213,7 @@ class Ghost(Entity):
             self.speed = 1.4
         self.update_move()
         self.move_future = [sing_number(self.move_future[0]) * self.speed, sing_number(self.move_future[1]) * self.speed]
+        self.update_images_group()
 
     # ФУНКЦИИ, ИЗМЕНЯЮЩИЕ НАПРАВЛЕНИЕ У ПРИЗРАКА, КОГДА ОН ДВИЖИТСЯ ПО ЛАБИРИНТУ
 
@@ -230,6 +228,7 @@ class Ghost(Entity):
         move_x = sing_number(target[0] - cell[0]) * self.speed
         move_y = sing_number(target[1] - cell[1]) * self.speed
         self.move_future = [move_x, move_y] # определяем направление
+        self.update_images_group()
 
     def turn_other_direction(self):
         "Изменяет направление призрака, если впереди него стена"
@@ -303,11 +302,11 @@ class Ghost(Entity):
     def update_image(self):
         """Меняет изображение у спрайта"""
         time_now = pg.time.get_ticks() / 1000
-        if time_now - self.start_time_img >= 1:
+        if time_now - self.start_time_img >= 0.4:
             self.image = self.group_images[self.index_img]
             self.start_time_img = time_now
 
-        limit_index = self.get_limit_id_img(time_now)
+        limit_index = self.get_limit_img()
         if not self.kill_ghost:
             if self.index_img < limit_index:
                 self.index_img += 1
@@ -316,15 +315,23 @@ class Ghost(Entity):
         else:
             self.index_img = -1
 
-    def get_limit_id_img(self):
+    def get_limit_img(self):
         """Определяет до какого числа должен доходить индекс изображения"""
         if self.mode_now != "scare":
             return 1
-        elif self.mode_now == "scare" and not self.kill_mode:
+        elif self.mode_now == "scare" and not self.kill_ghost:
             action_time_mode = (pg.time.get_ticks() - self.start_time_mode) / 1000  # находим время действия режима
-            if (self.time_mode_scare - action_time_mode) <= 2:
+            if (self.time_mode_scare - action_time_mode) <= 4:
                 return 3
             else:
                 return 1
-
-
+        else:
+            return 2
+        
+    def update_images_group(self):
+        """Возращает список изображений определенной группы"""
+        if self.mode_now != "scare" or self.kill_ghost:
+            key = get_name_move(self.move_future)
+        else:
+            key = "scare"
+        self.group_images = self.all_images[key]

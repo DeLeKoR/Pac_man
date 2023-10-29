@@ -20,7 +20,7 @@ ghost_eyes = os.path.join(images_folder, "ghost_eyes.png")
 
 # настройка призраков
 images_ghosts = (red_ghost, blue_ghost, pink_ghost, yellow_ghost)
-GHOST_SIZE = (40, 40)
+GHOST_SIZE = (50, 50)
 cords_ghosts = ((14, 11), (12, 14), (14, 14), (16, 14)) # координаты клеток, на которых сторят призраки в начале игры
 ghosts_colors = ("red", "blue", "pink", "yellow") 
 start_points = [(14, 14), (14, 11), (13, 11)] # целевые клетки призраков в доме

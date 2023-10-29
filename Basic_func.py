@@ -34,7 +34,7 @@ def get_name_move(move):
     if move[0]:
         return "left" if move[0] < 0 else "right"
     elif move[1]:
-        return "top" if move[0] < 0 else "down"
+        return "top" if move[1] < 0 else "down"
     else:
         return "down"
     
@@ -57,8 +57,4 @@ def load_ghost_images(ghost_color):
             
     return images_ghost
 
-def get_images_list(move, all_images):
-    """Возращает список изображений определенной группы"""
-    key = get_name_move(move)
-    return all_images[key]
 
