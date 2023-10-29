@@ -6,19 +6,15 @@ class Entity(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.size = (40, 40)
         self.screen = screen
-        # направление движения
         self.move_now = [0, 0]
         self.move_future = [0, 0]
-        self.moving = True
-        # скорость объекта >=0.51
+        self.moving = False
+        # скорость объекта > 0.5
         self.speed = 3
-        # клетка на которой расположен объект
         self.cell = cell
         self.next_cell = None
         self.future_cell = None
-        # все клетки
         self.cells = cells
-        # координаты (по умолчанию совмещают центр объекта с центром клетки)
         self.rect = pg.Rect(0, 0, *self.size)
         self.rect.center = self.cell.rect.center
         self.touch_rect = pg.Rect(0, 0, self.size[0]/2, self.size[1]/2)
@@ -45,9 +41,10 @@ class Entity(pg.sprite.Sprite):
                 self.centerx, self.centery = self.rect.center
                 # определение клетки в стороне будущего движения
                 future_cell = get_cell_by_cord((self.cell.cord[0] + sing_number(self.move_future[0]), self.cell.cord[1] + sing_number(self.move_future[1])), self.cells)
-                if future_cell is not None and future_cell.type:
+                if future_cell is not None and future_cell.type and future_cell != self.cell:
                     # замена направления движения
                     self.move_now = self.move_future
+                    self.moving = True
                 if self.move_now == self.move_future:
                     self.future_cell = future_cell
                 # определение следующей клетки по текущему направлению
@@ -69,15 +66,17 @@ class Entity(pg.sprite.Sprite):
                 self.touch_rect.center = self.rect.center
                 self.centerx = self.rect.centerx
                 self.textures.pop(1)
-        if self.future_cell is not None and self.next_cell is not None and self.future_cell.type and self.next_cell.type and self.moving:
-            # перемещает объект
-            self.x += self.move_now[0]
-            self.y += self.move_now[1]
-            self.centery += self.move_now[1]
-            self.centerx += self.move_now[0]
-            self.rect.x, self.rect.y = self.x, self.y
-            self.touch_rect.center = self.rect.center
-
+        if self.future_cell is not None and self.next_cell is not None:
+            if self.future_cell.type and self.next_cell.type and self.moving:
+                # перемещает объект
+                self.x += self.move_now[0]
+                self.y += self.move_now[1]
+                self.centery += self.move_now[1]
+                self.centerx += self.move_now[0]
+                self.rect.x, self.rect.y = self.x, self.y
+                self.touch_rect.center = self.rect.center
+            else:
+                self.moving = False
 
     def draw(self, object):
         if len(self.textures) == 0:

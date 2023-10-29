@@ -12,7 +12,7 @@ class Information_board:
         max_score = read_max_score()
         self.max_score = self.font.render(f'{max_score}', True, self.color)
 
-        picture = pg.image.load(PAC_MAN_IMG_PASS)
+        picture = pg.image.load('images/Pac_man_0.png')
         self.texture = pg.transform.scale(picture, (40, 40))
 
         self.size = (SCREEN_SIZE[0]-PLAY_BOARD_SIZE[0], SCREEN_SIZE[1])
