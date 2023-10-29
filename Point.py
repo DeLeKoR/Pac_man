@@ -11,7 +11,10 @@ class Point(pg.sprite.Sprite):
         self.rect.center = cord
 
     def draw(self):
-        pg.draw.circle(self.screen, (240, 240, 10), self.rect.center, self.size[0])
+        if self.type == 1:
+            pg.draw.rect(self.screen, (240, 240, 10), (*self.rect.topleft, *self.size))
+        else:
+            pg.draw.circle(self.screen, (240, 240, 10), self.rect.center, self.size[0])
 
 class Meal(pg.sprite.Sprite):
     def __init__(self, screen, value, cord, type:int = 1):

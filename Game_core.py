@@ -86,11 +86,12 @@ class Game:
                     self.first_points = len(self.map.points)
 
     def stop_entity(self):
+        """Останавливает призраков с пакманом на промежуток времени"""
         self.tick = pg.time.get_ticks()
         if self.entity_pause:
             self.old_tick = self.tick
             self.entity_pause ^= True
-        if self.tick - self.old_tick > 1000:
+        if self.tick - self.old_tick > 900:
             self.entity_pause ^= True
 
     def restart(self, ask: int = 0):
@@ -115,12 +116,14 @@ class Game:
         self.create_enemies()
 
     def save_max_score(self):
+        """Сохраняет текущий результат"""
         with open('max_score.txt', 'w', encoding='UTF-8') as file:
             file.write(str(*self.score))
 
-    def read_max_score(self):
+    def read_max_score(self) -> str:
+        """Возвращает строку с максимальным результатом"""
         with open('max_score.txt', 'r', encoding='UTF-8') as file:
-            return file.read()
+            return str(file.read())
 
 
 

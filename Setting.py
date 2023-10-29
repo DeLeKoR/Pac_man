@@ -40,7 +40,6 @@ WALL_COLOR = (10, 10, 240)
 
 FPS = 60
 
-PAC_MAN_IMG_PASS = f"{images_folder}/Pac_man.png"
 MAP_IMG_PASS = f"{images_folder}/pac_man_map.jpeg"
 
 MAP = [
