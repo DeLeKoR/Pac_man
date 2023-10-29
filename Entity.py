@@ -9,6 +9,7 @@ class Entity(pg.sprite.Sprite):
         # направление движения
         self.move_now = [0, 0]
         self.move_future = [0, 0]
+        self.moving = True
         # скорость объекта >=0.51
         self.speed = 3
         # клетка на которой расположен объект
@@ -20,8 +21,10 @@ class Entity(pg.sprite.Sprite):
         # координаты (по умолчанию совмещают центр объекта с центром клетки)
         self.rect = pg.Rect(0, 0, *self.size)
         self.rect.center = self.cell.rect.center
+        self.touch_rect = pg.Rect(0, 0, self.size[0]/2, self.size[1]/2)
         self.x = self.rect.x
         self.y = self.rect.y
+        self.touch_rect.center = self.rect.center
         self.centerx = self.rect.centerx
         self.centery = self.rect.centery
         self.textures = []
@@ -30,39 +33,50 @@ class Entity(pg.sprite.Sprite):
         if len(self.textures) >= 2:
             self.textures.pop(1)
         cell = get_cell(self.rect.center, self.cells)
+        # изменение текущего направления в зависимости от окружения
         if cell is not None:
+            # определение центра клетки
             if ((cell.rect.centerx - self.speed / 2 <= self.centerx <= cell.rect.centerx + self.speed / 2)
                     and (cell.rect.centery - self.speed / 2 <= self.centery <= cell.rect.centery + self.speed / 2)):
                 self.cell = cell
                 self.rect.center = self.cell.rect.center
+                self.touch_rect.center = self.rect.center
                 self.x, self.y = self.rect.x, self.rect.y
                 self.centerx, self.centery = self.rect.center
+                # определение клетки в стороне будущего движения
                 future_cell = get_cell_by_cord((self.cell.cord[0] + sing_number(self.move_future[0]), self.cell.cord[1] + sing_number(self.move_future[1])), self.cells)
                 if future_cell is not None and future_cell.type:
+                    # замена направления движения
                     self.move_now = self.move_future
                 if self.move_now == self.move_future:
                     self.future_cell = future_cell
+                # определение следующей клетки по текущему направлению
                 self.next_cell = get_cell_by_cord((self.cell.cord[0] + sing_number(self.move_now[0]), self.cell.cord[1] + sing_number(self.move_now[1])), self.cells)
         if self.next_cell is None or self.future_cell is None:
+            # определяет нахождение и передвижение на краю карты
             if len(self.textures) > 0:
+                # отрисовывает вторую текстуру на другой стороне
                 self.textures.append(self.textures[0])
             self.x += self.move_now[0]
             self.centerx += self.move_now[0]
             self.rect.x = self.x
-            if int(-self.cell.cell_size[0]/2)-self.speed/2 <=self.rect.center[0] <= int(-self.cell.cell_size[0]/2)+self.speed/2 or (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])-self.speed/2 <= self.rect.center[0] <= (int(self.cell.cell_size[0]/2) + PLAY_BOARD_SIZE[0])+self.speed/2:
+            if int(-self.cell.size[0] / 2)-self.speed/2 <=self.rect.center[0] <= int(-self.cell.size[0] / 2)+self.speed/2 or (int(self.cell.size[0] / 2) + PLAY_BOARD_SIZE[0])-self.speed/2 <= self.rect.center[0] <= (int(self.cell.size[0] / 2) + PLAY_BOARD_SIZE[0])+self.speed/2:
                 if self.rect.centerx < 0:
                     self.rect.center = get_cell_by_cord((self.cell.cord[0]+27, self.cell.cord[1]), self.cells).rect.center
                 else:
                     self.rect.center = get_cell_by_cord((self.cell.cord[0] - 27, self.cell.cord[1]),self.cells).rect.center
                 self.x = self.rect.x
+                self.touch_rect.center = self.rect.center
                 self.centerx = self.rect.centerx
                 self.textures.pop(1)
-        if self.future_cell is not None and self.next_cell is not None and self.future_cell.type and self.next_cell.type:
+        if self.future_cell is not None and self.next_cell is not None and self.future_cell.type and self.next_cell.type and self.moving:
+            # перемещает объект
             self.x += self.move_now[0]
             self.y += self.move_now[1]
             self.centery += self.move_now[1]
             self.centerx += self.move_now[0]
             self.rect.x, self.rect.y = self.x, self.y
+            self.touch_rect.center = self.rect.center
 
 
     def draw(self, object):

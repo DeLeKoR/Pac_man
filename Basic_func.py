@@ -12,6 +12,8 @@ def get_cell(cords, cells):
 
 def get_cell_by_cord(cords, cells) -> object:
     """Возвращает клетку по её координатам"""
+    if 0 > cords[0] <= 28 or 0 > cords[1] <= 31:
+        return None
     for cell in cells:
         if cell.cord == cords:
             return cell
@@ -21,6 +23,11 @@ def check_cell(cords):
     if cords[1] in dir_select_cells.keys():
             if cords[0] in dir_select_cells[cords[1]]:
                 return True
+    return False
+
+def check_number_in_gap(num, gap:tuple):
+    if gap[0] <= num < gap[1]:
+       return True
     return False
 
 def sing_number(number) -> int:

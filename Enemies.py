@@ -20,6 +20,7 @@ class Ghost(Entity):
         self.retreat_cell = retreat_cell    # целевая клетка отступления
         self.target = None  # целевая клетка призрака
         self.pac_man = pac_man
+        self.value = 200  # ценность призрака
         self.mode_now = "run"
         self.mode_first = "attack"
         self.times_modes = [7, 20, 7, 20, 5, 20, 5]
@@ -180,6 +181,7 @@ class Ghost(Entity):
         elif self.future_cell.cord == start_points[2]:
             self.ghost_in_house = False
             self.speed = 2.5
+            self.target = self.retreat_cell
             self.update_move()
             self.move_future = [-self.speed, 0]
             self.update_images_group()

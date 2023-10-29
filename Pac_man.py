@@ -4,9 +4,10 @@ from Text_points import *
 from Entity import *
 
 class Pac_man(Entity):
-    def __init__(self, cell, screen, cells, enemies):
+    def __init__(self, cell, screen, cells, enemies, stop_entity):
         super().__init__(screen, cell, cells)
         picture = pg.image.load(PAC_MAN_IMG_PASS)
+        self.stop_entity = stop_entity
         self.pac_man = pg.transform.scale(picture, self.size)
         self.enemies = enemies
         self.time_eat = pg.time.get_ticks() # время, когда пакман съел последниюю точку
@@ -15,13 +16,13 @@ class Pac_man(Entity):
     def draw_pac_man(self):
         self.draw(self.pac_man)
 
-    def eat_point(self, score, numbers):
+    def eat_point(self, score, number):
         cell = get_cell(self.rect.center, self.cells)
         if (cell is not None and ((cell.rect.centerx - self.speed / 2 <= self.centerx <= cell.rect.centerx + self.speed / 2)
                     and (cell.rect.centery - self.speed / 2 <= self.centery <= cell.rect.centery + self.speed / 2))):
 
             if cell.point is not None:
-                numbers.add(Number(cell))
+                number(cell)
                 score[0] += cell.point.value
                 if cell.point.type == 3:
                     for enemy in self.enemies:
@@ -37,17 +38,21 @@ class Pac_man(Entity):
                 self.update_move()
 
             if cell.meal is not None:
-                numbers.add(Number(cell))
+                number(cell, size=28)
                 cell.meal.kill()
                 score[0] += cell.meal.value
                 cell.meal = None
 
-    def interaction(self, restart, lives, enemy):
+    def interaction(self, restart, lives, enemy, score, number):
         """Определение соприкосновения пакмена с призраком"""
-        if self.cell.cord == enemy.cell.cord:
+        if self.touch_rect.colliderect(enemy.touch_rect):
             if enemy.mode_now == 'scare':
+                if not enemy.kill_ghost:
+                    self.stop_entity()
+                    score[0] += enemy.value
+                    number(enemy.cell, enemy.value, 30)
                 enemy.kill_mode()
-            elif enemy.mode_now == "attack":
+            else:
                 if lives[0]:
                     restart(0)
                     lives[0] -= 1

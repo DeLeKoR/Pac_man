@@ -4,37 +4,48 @@ from Enemies import *
 from Pac_man import *
 from Basic_func import *
 from Information_board import *
+import os
 
 class Game:
     def __init__(self, screen, fps: int = 0):
         self.screen = screen
         self.fps = fps
+        self.tick = 0
+        self.old_tick = 0
         self.pause = True
+        self.entity_pause = True
         self.lives = [3]
         self.score = [0]
         self.level = 1
         self.map = Map(self.screen)
         self.enemies = pg.sprite.Group()
         self.cord_red = (14, 11)
-        self.first_points = len(self.map.points) # кол-во точек на карте в момент, когда призрак активизируется
-        self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)
+        self.first_points = len(self.map.points) # общее кол-во точек на карте
+        self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies, self.stop_entity)
         self.create_enemies()
-        self.info_board = Information_board(self.screen)
+        if not os.path.isfile('max_score.txt'):
+            self.save_max_score()
+        self.info_board = Information_board(self.screen, self.read_max_score)
 
     def draw_frame(self):
         self.map.draw_map()
-        self.pac_man.draw_pac_man()
+        if self.entity_pause:
+            self.pac_man.draw_pac_man()
         for enemy in self.enemies:
-            enemy.draw_enemy()
+            if (enemy.kill_ghost and self.entity_pause) or not enemy.kill_ghost or self.entity_pause:
+                enemy.draw_enemy()
         self.info_board.draw_board(self.fps, self.lives, self.level, self.score)
 
     def create_frame(self):
         if self.map.check_points():
             self.restart(2)
             self.level += 1
-        self.pac_man.move()
-        self.pac_man.eat_point(self.score, self.map.numbers)
-        self.update_ghosts()
+        if self.entity_pause:
+            self.pac_man.move()
+            self.pac_man.eat_point(self.score, self.map.add_number)
+            self.update_ghosts()
+        else:
+            self.stop_entity()
         self.map.create_meal()
 
     def create_enemies(self): 
@@ -50,7 +61,7 @@ class Game:
             if enemy.activity:
                 if not enemy.kill_ghost and (enemy.cell.cord == (5, 14) or enemy.cell.cord == (22, 14) or (enemy.future_cell is None and enemy.cell.type == 2)):
                     enemy.ghost_in_tunnel()
-                self.pac_man.interaction(self.restart, self.lives, enemy) # проверяем взаимодействие пакмана с призраком
+                self.pac_man.interaction(self.restart, self.lives, enemy, self.score, self.map.add_number) # проверяем взаимодействие пакмана с призраком
                 if enemy.mode_now == "attack":
                     if enemy.color_type == "red":
                         self.cord_red = enemy.cell.cord
@@ -69,6 +80,14 @@ class Game:
                     enemy.activity = True
                     self.first_points = len(self.map.points)
 
+    def stop_entity(self):
+        self.tick = pg.time.get_ticks()
+        if self.entity_pause:
+            self.old_tick = self.tick
+            self.entity_pause ^= True
+        if self.tick - self.old_tick > 1000:
+            self.entity_pause ^= True
+
     def restart(self, ask: int = 0):
         """
         Перезапускает игру
@@ -78,14 +97,26 @@ class Game:
         if ask == 1 or ask == 2:
             self.map = Map(self.screen)
         if ask == 1:
-            self.info_board = Information_board(self.screen)
+            if int(self.read_max_score()) < self.score[0]:
+                self.save_max_score()
+            self.info_board = Information_board(self.screen, self.read_max_score)
             self.level = 1
             self.score = [0]
             self.lives = [2]
         self.enemies.empty()
         self.cord_red = (14, 11)
         self.first_points = len(self.map.points)
-        self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)
+        self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies, self.stop_entity)
         self.create_enemies()
+
+    def save_max_score(self):
+        with open('max_score.txt', 'w', encoding='UTF-8') as file:
+            file.write(str(*self.score))
+
+    def read_max_score(self):
+        with open('max_score.txt', 'r', encoding='UTF-8') as file:
+            return file.read()
+
+
 
 
