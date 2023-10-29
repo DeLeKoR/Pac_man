@@ -9,6 +9,7 @@ class Pac_man(Entity):
         picture = pg.image.load(PAC_MAN_IMG_PASS)
         self.pac_man = pg.transform.scale(picture, self.size)
         self.enemies = enemies
+        self.time_eat = pg.time.get_ticks() # время, когда пакман съел последниюю точку
         self.loc_speed = self.speed
 
     def draw_pac_man(self):
@@ -27,6 +28,7 @@ class Pac_man(Entity):
                         if not enemy.ghost_in_house:
                             enemy.scare_mode_on()
                 cell.point.kill()
+                self.time_eat = pg.time.get_ticks()
                 cell.point = None
                 self.speed = self.loc_speed*0.9
                 self.update_move()

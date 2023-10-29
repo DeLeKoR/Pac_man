@@ -16,7 +16,7 @@ class Game:
         self.map = Map(self.screen)
         self.enemies = pg.sprite.Group()
         self.cord_red = (14, 11)
-        self.first_points = len(self.map.points) # общее кол-во точек на карте
+        self.first_points = len(self.map.points) # кол-во точек на карте в момент, когда призрак активизируется
         self.pac_man = Pac_man(get_cell_by_cord((2, 14), self.map.cells), self.screen, self.map.cells, self.enemies)
         self.create_enemies()
         self.info_board = Information_board(self.screen)
@@ -38,13 +38,18 @@ class Game:
         self.map.create_meal()
 
     def create_enemies(self): 
-        for color_type, image, cords, retreat, point_limit in zip(ghosts_colors, images_ghosts, cords_ghosts, retreat_cords, points_limit):
+        for color_type, image, cords, retreat, point_limit, time_limit in zip(ghosts_colors, images_ghosts, cords_ghosts, retreat_cords, points_limit, times_limit):
+            all_images = load_ghost_images(color_type)
+            group_images = all_images["down"]
+            #image = group_images[1]
             cell = get_cell_by_cord(cords, self.map.cells)
-            ghost = Ghost(cell, self.map.cells, self.screen, image, color_type, retreat, True, self.pac_man, point_limit)
+            ghost = Ghost(cell, self.map.cells, self.screen, image, group_images, all_images, color_type, retreat, True, self.pac_man, point_limit, time_limit)
             self.enemies.add(ghost)
 
     def update_ghosts(self):
         for enemy in self.enemies:
+            if enemy.color_type in ("blue", "yellow", "pink"):
+                enemy.kill()
             if enemy.activity:
                 if not enemy.kill_ghost and (enemy.cell.cord == (5, 14) or enemy.cell.cord == (22, 14) or (enemy.future_cell is None and enemy.cell.type == 2)):
                     enemy.ghost_in_tunnel()
@@ -69,7 +74,7 @@ class Game:
                     enemy.move()
                 enemy.update()
             else:
-                if self.first_points - len(self.map.points) >= enemy.point_limit: # если кол-во точек, которых съел пакман, превышает лимит, то призрак должен начать двигаться
+                if (self.first_points - len(self.map.points) >= enemy.point_limit) or (pg.time.get_ticks() - self.pac_man.time_eat) / 1000 >= enemy.time_limit: # если кол-во точек, которых съел пакман, превышает лимит, то призрак должен начать двигаться
                     enemy.start_move()
                     enemy.activity = True
                     self.first_points = len(self.map.points)

@@ -1,20 +1,24 @@
 from Setting import *
 from Entity import Entity
-from Basic_func import get_cell_by_cord, sing_number
+from Basic_func import *
 import random
 
 class Ghost(Entity):
-    def __init__(self, cell, cells, screen, image, color_type, retreat_cell, ghost_in_house, pac_man, limit_point):
+    def __init__(self, cell, cells, screen, image, group_images, all_images, color_type, retreat_cell, ghost_in_house, pac_man, limit_point, time_limit):
         super().__init__(screen, cell, cells)
         self.base_image = pg.transform.scale(pg.image.load(image), self.size) # основное изображение призрака
         self.scared_ghost = pg.transform.scale(pg.image.load(scared_ghost), self.size)  # изображение испуганного призрака
         self.white_ghost = pg.transform.scale(pg.image.load(white_ghost), self.size)  # изображение белого от испуга призрака
         self.ghost_eyes = pg.transform.scale(pg.image.load(ghost_eyes), self.size) # изображение глаз призрака
         self.list_scare_imgs = [self.scared_ghost, self.white_ghost]   # изображения испуганного призрака
-        self.start_time_img = 0    # время, когда у спрайта меняется изображение
-        self.image = self.base_image  # текущее изибражение
+        self.start_time_img = 0    # время, когда у спрайта изменилось изображение
+        self.image = self.base_image # текущее изображение у спрайта
+        self.group_images = group_images # отдельная группа изображений призрака
+        self.index_img = 0 # индекс текущего изображения в группе
+        self.all_images = all_images # все ихображения для призрака
         self.activity = False
         self.point_limit = limit_point    # число, которое должен набрать игрок, чтобы запустить призраков
+        self.time_limit = time_limit
         self.start_cords = cell.cord    # начальное положение призрака
         self.ghost_in_house = ghost_in_house    # равен True, если призрак в доме
         self.color_type = color_type    # тип цвета призрака
@@ -35,6 +39,7 @@ class Ghost(Entity):
             self.speed = 2.5
             self.move_future = [-self.speed, 0]
             self.move_now = [-self.speed, 0]
+            self.group_images = get_images_list(self.move_future, self.all_images)
             self.target = self.retreat_cell
             self.ghost_in_house = False
             self.start_cords = start_points[0]
@@ -93,13 +98,13 @@ class Ghost(Entity):
     def scare_mode_on(self):
         """Режим испуга призрака"""
         if self.mode_now != "scare":
-            self.image = self.scared_ghost
             self.mode_first = self.mode_now
             self.mode_now = "scare"
             self.speed = 1.7
             self.update_move()
             self.move_future = [self.move_now[0] * (-1), self.move_now[1] * (-1)]
 
+        self.image = self.scared_ghost
         self.start_time_mode = pg.time.get_ticks()
 
     def scare_mode_off(self):
@@ -121,6 +126,7 @@ class Ghost(Entity):
         self.speed = 3.5
         self.update_move()
         self.move_future = [sing_number(self.move_future[0]) * self.speed, sing_number(self.move_future[1]) * self.speed]
+    
     # ОПРЕДЕЛЕНИЕ ЦЕЛЕВОЙ КЛЕТКИ У ПРИЗРАКОВ В РЕЖИМЕ АТАКИ
     
     def count_target_ghosts(self, cord_red):
@@ -291,3 +297,34 @@ class Ghost(Entity):
             x, y = cord_1[0] - cord_2[0], cord_1[1] - cord_2[1]
             d = (x ** 2 + y ** 2) ** 0.5
         return round(d, 2)
+    
+    ################### АНИМАЦИИ ###################
+
+    def update_image(self):
+        """Меняет изображение у спрайта"""
+        time_now = pg.time.get_ticks() / 1000
+        if time_now - self.start_time_img >= 1:
+            self.image = self.group_images[self.index_img]
+            self.start_time_img = time_now
+
+        limit_index = self.get_limit_id_img(time_now)
+        if not self.kill_ghost:
+            if self.index_img < limit_index:
+                self.index_img += 1
+            else:
+                self.index_img = 0
+        else:
+            self.index_img = -1
+
+    def get_limit_id_img(self):
+        """Определяет до какого числа должен доходить индекс изображения"""
+        if self.mode_now != "scare":
+            return 1
+        elif self.mode_now == "scare" and not self.kill_mode:
+            action_time_mode = (pg.time.get_ticks() - self.start_time_mode) / 1000  # находим время действия режима
+            if (self.time_mode_scare - action_time_mode) <= 2:
+                return 3
+            else:
+                return 1
+
+
