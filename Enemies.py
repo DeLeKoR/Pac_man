@@ -332,7 +332,7 @@ class Ghost(Entity):
         
     def update_images_group(self):
         """Возращает список изображений определенной группы"""
-        if self.mode_now != "scare" or self.kill_ghost:
+        if self.mode_now != "scare" or self.kill_ghost or self.ghost_in_house:
             key = get_name_move(self.move_future)
         else:
             key = "scare"
