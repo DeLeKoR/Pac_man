@@ -17,7 +17,7 @@ class Game:
         self.lives = [3]
         self.score = [0]
         self.level = 1
-        self.map = Map(self.screen)
+        self.map = Map(self.screen, self.level)
         self.enemies = pg.sprite.Group()
         self.cord_red = (14, 11)
         self.first_points = len(self.map.points) # общее кол-во точек на карте
@@ -40,6 +40,7 @@ class Game:
         if self.map.check_points():
             self.restart(2)
             self.level += 1
+            self.map.level += 1
         if self.entity_pause:
             self.pac_man.move()
             self.pac_man.eat_point(self.score, self.map.add_number)
@@ -96,7 +97,7 @@ class Game:
         True = полный перезапуск игры
         """
         if ask == 1 or ask == 2:
-            self.map = Map(self.screen)
+            self.map = Map(self.screen, self.level)
         if ask == 1:
             if int(self.read_max_score()) < self.score[0]:
                 self.save_max_score()

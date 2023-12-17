@@ -5,7 +5,7 @@ from Text_points import *
 
 
 class Map:
-    def __init__(self, screen):
+    def __init__(self, screen, level):
         self.screen = screen
         self.surface_map = pg.Surface(PLAY_BOARD_SIZE)
         self.surface_map_rect = self.surface_map.get_rect()
@@ -18,6 +18,7 @@ class Map:
         picture = pg.image.load(MAP_IMG_PASS)
         self.image_map = pg.transform.scale(picture, PLAY_BOARD_SIZE)
         self.score = 0
+        self.level = level
 
     def draw_map(self):
         self.surface_map.fill((10, 10, 10))
@@ -106,7 +107,8 @@ class Map:
             self.score = 1
             cell = get_cell_by_cord((14, 17), self.cells)
             type = 1 if len(self.points) == 176 else 2
-            meal = Meal(self.surface_map, 100, cell.rect.center, type)
+            value = 100*self.level if self.level <= 50 else 5000
+            meal = Meal(self.surface_map, value, cell.rect.center, type)
             self.meal.add(meal)
             cell.meal = meal
 
