@@ -7,7 +7,8 @@ from Information_board import *
 import os
 
 class Game:
-    def __init__(self, screen, fps: int = 0):
+    def __init__(self, screen, fps: int = 0, activ=True):
+        self.activ = activ
         self.screen = screen
         self.fps = fps
         self.tick = 0
@@ -28,6 +29,7 @@ class Game:
         self.info_board = Information_board(self.screen, self.read_max_score)
 
     def draw_frame(self):
+        self.screen.fill(BG_COLOR)
         self.map.draw_map()
         if self.entity_pause:
             self.pac_man.draw_pac_man()

@@ -17,7 +17,7 @@ class Entity(pg.sprite.Sprite):
         self.cells = cells
         self.rect = pg.Rect(0, 0, *self.size)
         self.rect.center = self.cell.rect.center
-        self.touch_rect = pg.Rect(0, 0, self.size[0]/2, self.size[1]/2)
+        self.touch_rect = pg.Rect(0, 0, self.size[0]//1.5, self.size[1]//1.5)
         self.x = self.rect.x
         self.y = self.rect.y
         self.touch_rect.center = self.rect.center

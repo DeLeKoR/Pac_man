@@ -44,7 +44,6 @@ SCREEN_SIZE = (1000, 775)
 PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
 BG_COLOR = (5, 5, 20)
 WALL_COLOR = (10, 10, 240)
-
 FPS = 60
 
 MAP_IMG_PASS = f"{images_folder}/pac_man_map.jpeg"
@@ -82,9 +81,3 @@ MAP = [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
-
-if __name__ == '__main__':
-    print(len(MAP), len(MAP[0]))
-    print(MAP[27][14])
-
-#pg.draw.circle(self.surface_map, (10, 10, 200), cell.rect.center, cell.rect.height, 2, draw_bottom_right=True)
