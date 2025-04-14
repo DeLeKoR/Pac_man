@@ -4,10 +4,7 @@ import sys
 
 class Core:
     def __init__(self):
-        pg.init()
-        pg.display.set_caption('Pac_man')
-
-        self.screen = pg.display.set_mode(SCREEN_SIZE)
+        self.screen = SCREEN
         self.clock = pg.time.Clock()
 
         self.main_screen = Main_menu(self.screen, self.change_game_mod, self.quite_game)
@@ -38,7 +35,7 @@ class Core:
     def update_game(self, events):
         for event in events:
             if event.type == pg.KEYDOWN:
-                if self.game.pause:
+                if self.game.inform.pause:
                     if event.key == pg.K_w or event.key == pg.K_UP:
                         self.game.pac_man.move_future = [0, -self.game.pac_man.speed]
                     elif event.key == pg.K_s or event.key == pg.K_DOWN:
@@ -48,9 +45,9 @@ class Core:
                     elif event.key == pg.K_d or event.key == pg.K_RIGHT:
                         self.game.pac_man.move_future = [self.game.pac_man.speed, 0]
                 if event.key == pg.K_ESCAPE:
-                    self.game.pause ^= True
-        if self.game.pause:
-            self.game.fps = self.clock.get_fps()
+                    self.game.inform.pause ^= True
+        if self.game.inform.pause:
+            self.game.inform.fps = self.clock.get_fps()
             self.game.create_frame()
         self.game.draw_frame()
 

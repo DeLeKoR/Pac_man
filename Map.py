@@ -152,7 +152,7 @@ class Cell(pg.sprite.Sprite):
     def __draw_left_line(self):
         y = 0
         ad = False
-        if self.adjacent_cells_cords[0] is not None and self.adjacent_cells_cords[0][1]:
+        if self.adjacent_cells_cords[0] is not None and self.adjacent_cells_cords[5] is not None and self.adjacent_cells_cords[0][1]:
             # отрисовка левой вертикальной линии
             if self.adjacent_cells_cords[0][1] == 5 and self.adjacent_cells_cords[4][1]:
                 self.offset = 0

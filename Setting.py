@@ -1,6 +1,10 @@
 import pygame as pg
 import os
 
+pg.init()
+pg.display.set_caption('Pac_man')
+SCREEN = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+
 # настройка ассетов игры
 game_folder = os.path.dirname(__file__)
 images_folder = os.path.join(game_folder, "images")
@@ -40,8 +44,7 @@ dir_select_cells = {
     29: (12, 15)
 }
 
-SCREEN_SIZE = (1000, 775)
-PLAY_BOARD_SIZE = (700, SCREEN_SIZE[1])
+SCREEN_SIZE = SCREEN.get_size()
 BG_COLOR = (5, 5, 20)
 WALL_COLOR = (10, 10, 240)
 FPS = 60
@@ -81,3 +84,8 @@ MAP = [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
+
+MAP_SIZE = len(MAP[0]), len(MAP)
+CELL_SIZE = SCREEN_SIZE[1]//MAP_SIZE[1]
+PLAY_BOARD_SIZE = CELL_SIZE * MAP_SIZE[0], CELL_SIZE * MAP_SIZE[1]
+print(PLAY_BOARD_SIZE)

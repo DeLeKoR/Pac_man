@@ -15,7 +15,7 @@ class Information_board:
         picture = pg.image.load('images/Pac_man_0.png')
         self.texture = pg.transform.scale(picture, (40, 40))
 
-        self.size = (SCREEN_SIZE[0]-PLAY_BOARD_SIZE[0], SCREEN_SIZE[1])
+        self.size = (self.screen.get_size()[0]-PLAY_BOARD_SIZE[0], SCREEN_SIZE[1])
         self.surface = pg.Surface(self.size)
         self.surface_rect = self.surface.get_rect()
         self.surface_rect.topleft = ((PLAY_BOARD_SIZE[0], 0))

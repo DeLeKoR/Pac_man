@@ -7,18 +7,12 @@ from Information_board import *
 import os
 
 class Game:
-    def __init__(self, screen, fps: int = 0, activ=True):
+    def __init__(self, screen, activ=True):
         self.activ = activ
         self.screen = screen
-        self.fps = fps
-        self.tick = 0
-        self.old_tick = 0
-        self.pause = True
+        self.inform = Information()
         self.entity_pause = True
-        self.lives = [3]
-        self.score = [0]
-        self.level = 1
-        self.map = Map(self.screen, self.level)
+        self.map = Map(self.screen, self.inform.level[0])
         self.enemies = pg.sprite.Group()
         self.cord_red = (14, 11)
         self.first_points = len(self.map.points) # общее кол-во точек на карте
@@ -36,16 +30,17 @@ class Game:
         for enemy in self.enemies:
             if (enemy.kill_ghost and self.entity_pause) or not enemy.kill_ghost or self.entity_pause:
                 enemy.draw_enemy()
-        self.info_board.draw_board(self.fps, self.lives, self.level, self.score)
+        self.info_board.draw_board(self.inform.fps, self.inform.lives, self.inform.level[0], self.inform.score)
 
     def create_frame(self):
+        self.inform.game_ticks += 1
         if self.map.check_points():
             self.restart(2)
-            self.level += 1
+            self.inform.level[0] += 1
             self.map.level += 1
         if self.entity_pause:
             self.pac_man.move()
-            self.pac_man.eat_point(self.score, self.map.add_number)
+            self.pac_man.eat_point(self.inform.score, self.map.add_number)
             self.update_ghosts()
         else:
             self.stop_entity()
@@ -64,7 +59,7 @@ class Game:
             if enemy.activity:
                 if not enemy.kill_ghost and (enemy.cell.cord == (5, 14) or enemy.cell.cord == (22, 14) or (enemy.future_cell is None and enemy.cell.type == 2)):
                     enemy.ghost_in_tunnel()
-                self.pac_man.interaction(self.restart, self.lives, enemy, self.score, self.map.add_number) # проверяем взаимодействие пакмана с призраком
+                self.pac_man.interaction(self.restart, self.inform.lives, enemy, self.inform.score, self.map.add_number) # проверяем взаимодействие пакмана с призраком
                 if enemy.mode_now == "attack":
                     if enemy.color_type == "red":
                         self.cord_red = enemy.cell.cord
@@ -85,11 +80,11 @@ class Game:
 
     def stop_entity(self):
         """Останавливает призраков с пакманом на промежуток времени"""
-        self.tick = pg.time.get_ticks()
+        self.inform.tick = self.inform.game_ticks
         if self.entity_pause:
-            self.old_tick = self.tick
+            self.inform.old_tick = self.inform.tick
             self.entity_pause ^= True
-        if self.tick - self.old_tick > 900:
+        if self.inform.tick - self.inform.old_tick > 60:
             self.entity_pause ^= True
 
     def restart(self, ask: int = 0):
@@ -99,14 +94,14 @@ class Game:
         True = полный перезапуск игры
         """
         if ask == 1 or ask == 2:
-            self.map = Map(self.screen, self.level)
+            self.map = Map(self.screen, self.inform.level[0])
         if ask == 1:
-            if int(self.read_max_score()) < self.score[0]:
+            if int(self.read_max_score()) < self.inform.score[0]:
                 self.save_max_score()
             self.info_board = Information_board(self.screen, self.read_max_score)
-            self.level = 1
-            self.score = [0]
-            self.lives = [2]
+            self.inform.level[0] = 1
+            self.inform.score = [0]
+            self.inform.lives = [2]
         self.enemies.empty()
         self.cord_red = (14, 11)
         self.first_points = len(self.map.points)
@@ -116,12 +111,25 @@ class Game:
     def save_max_score(self):
         """Сохраняет текущий результат"""
         with open('max_score.txt', 'w', encoding='UTF-8') as file:
-            file.write(str(*self.score))
+            file.write(str(*self.inform.score))
 
     def read_max_score(self) -> str:
         """Возвращает строку с максимальным результатом"""
         with open('max_score.txt', 'r', encoding='UTF-8') as file:
             return str(file.read())
+
+
+class Information:
+    def __init__(self):
+        self.fps = 0
+        self.game_ticks = 0
+        self.tick = 0
+        self.old_tick = 0
+        self.pause = True
+        self.entity_pause = True
+        self.lives = [3]
+        self.score = [0]
+        self.level = [1]
 
 
 
